@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.curtis.talent_recruitment.application.dao.ApplicationDao">
+
+    <!-- 查询所有申请信息 -->
+    <select id="getList" resultType="com.curtis.talent_recruitment.application.entity.Application">
+        select
+            id, sResumeID, sPositionID, sHRID, iStatus, dCreateTime, dUpdateTime
+        from
+            t_application
+    </select>
+
+    <!-- 根据id查询一个申请信息 -->
+    <select id="getDetail" resultType="com.curtis.talent_recruitment.application.entity.Application">
+        select
+            id, sResumeID, sPositionID, sHRID, iStatus, dCreateTime, dUpdateTime
+        from
+            t_application
+        where
+            id = #{id}
+    </select>
+
+    <!-- 新增一个申请信息 -->
+    <insert id="add">
+        insert into
+            t_application
+        (
+            id, sResumeID, sPositionID, sHRID, iStatus, dCreateTime, dUpdateTime
+        )
+        values
+        (
+            #{id},#{sResumeID},#{sPositionID},#{sHRID}, #{iStatus}, #{dCreateTime}, #{dUpdateTime}
+        )
+    </insert>
+
+    <!-- 根据id删除一个申请信息 -->
+    <delete id="delete">
+        delete from
+            t_application
+        where
+            id = #{id}
+    </delete>
+
+    <!-- 根据id更新一个申请信息 -->
+    <update id="update">
+        update
+            t_application
+        set
+            sResumeID = #{sResumeID},
+            sPositionID = #{sPositionID},
+            sHRID = #{sHRID},
+            iStatus = #{iStatus},
+            dUpdateTime = #{dUpdateTime}
+        where
+            id = #{id}
+    </update>
+
+    <!-- 根据条件查询统计信息 -->
+    <select id="getCount" resultType="int">
+        select
+            count(1)
+        from
+            t_application
+        where
+            1=1
+        <if test="sPositionID != null and sPositionID != ''">
+            and sPositionID = #{sPositionID}
+        </if>
+        <if test="sResumeID != null and sResumeID != ''">
+            and sResumeID = #{sResumeID}
+        </if>
+        <if test="sHRID != null and sHRID != ''">
+            and sHRID = #{sHRID}
+        </if>
+    </select>
+
+</mapper>

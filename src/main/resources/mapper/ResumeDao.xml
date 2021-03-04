@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.curtis.talent_recruitment.resume.dao.ResumeDao">
+
+    <!-- 查询所有简历信息 -->
+    <select id="getList" resultType="com.curtis.talent_recruitment.resume.entity.Resume">
+        select
+            id, sUserID, sPicture, sPersonalSummary, sEducationExperience, sAbility,
+            sWorkExperience, sCertificate, sJobDesire, sSkillsAndOthers, dCreateTime, dUpdateTIme
+        from
+            t_resume
+    </select>
+
+    <!-- 根据id查询一个简历信息 -->
+    <select id="getDetail" resultType="com.curtis.talent_recruitment.resume.entity.Resume">
+        select
+            id, sUserID, sPicture, sPersonalSummary, sEducationExperience, sAbility,
+            sWorkExperience, sCertificate, sJobDesire, sSkillsAndOthers, dCreateTime, dUpdateTIme
+        from
+            t_resume
+        where
+            id = #{id}
+    </select>
+
+    <!-- 新增一个简历信息 -->
+    <insert id="add">
+        insert into
+            t_resume
+        (
+            id, sUserID, sPicture, sPersonalSummary, sEducationExperience, sAbility,
+            sWorkExperience, sCertificate, sJobDesire, sSkillsAndOthers, dCreateTime, dUpdateTIme
+        )
+        values
+        (
+            #{id},#{sUserID},#{sPicture},#{sPersonalSummary},#{sEducationExperience},#{sAbility},
+            #{sWorkExperience},#{sCertificate},#{sJobDesire},#{sSkillsAndOthers},#{dCreateTime},#{dUpdateTIme}
+        )
+    </insert>
+
+    <!-- 根据id删除一个简历信息 -->
+    <delete id="delete">
+        delete from
+            t_resume
+        where
+            id = #{id}
+    </delete>
+
+    <!-- 根据id更新一个简历信息 -->
+    <update id="update">
+        update
+            t_resume
+        set
+            sUserID = #{sUserID},
+            sPicture = #{sPicture},
+            sPersonalSummary = #{sPersonalSummary},
+            sEducationExperience = #{sEducationExperience},
+            sAbility = #{sAbility},
+            sWorkExperience = #{sWorkExperience},
+            sCertificate = #{sCertificate},
+            sJobDesire = #{sJobDesire},
+            sSkillsAndOthers = #{sSkillsAndOthers},
+            dUpdateTime = #{dUpdateTime}
+        where
+            id = #{id}
+    </update>
+
+    <!-- 根据条件查询统计信息 -->
+    <select id="getCount" resultType="int">
+        select
+            count(1)
+        from
+            t_resume
+        where
+            1=1
+        <if test="sUserID != null and sUserID != ''">
+            and sUserID = #{sUserID}
+        </if>
+    </select>
+
+</mapper>

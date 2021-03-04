@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.curtis.talent_recruitment.position.dao.PositionDao">
+
+    <!-- 查询所有职位信息 -->
+    <select id="getList" resultType="com.curtis.talent_recruitment.position.entity.Position">
+        select
+            id, sPositionName, sRequirement, iQuantity, sWorkCity, sSalary, sWelfare, sCategoryID, sDepartmentID, iViews, dCreateTime, dUpdateTime
+        from
+            t_position
+    </select>
+
+    <!-- 根据id查询一个职位信息 -->
+    <select id="getDetail" resultType="com.curtis.talent_recruitment.position.entity.Position">
+        select
+            id, sPositionName, sRequirement, iQuantity, sWorkCity, sSalary, sWelfare, sCategoryID, sDepartmentID, iViews, dCreateTime, dUpdateTime
+        from
+            t_position
+        where
+            id = #{id}
+    </select>
+
+    <!-- 新增一个职位信息 -->
+    <insert id="add">
+        insert into
+            t_position
+        (
+            id, sPositionName, sRequirement, iQuantity, sWorkCity, sSalary, sWelfare, sCategoryID, sDepartmentID, iViews, dCreateTime, dUpdateTime
+        )
+        values
+        (
+            #{id},#{sPositionName},#{sRequirement},#{iQuantity},#{sWorkCity},#{sSalary},#{sWelfare},#{sCategoryID},#{sDepartmentID},#{iViews},#{dCreateTime},#{dUpdateTime}
+        )
+    </insert>
+
+    <!-- 根据id删除一个职位信息 -->
+    <delete id="delete">
+        delete from
+            t_position
+        where
+            id = #{id}
+    </delete>
+
+    <!-- 根据id更新一个职位信息 -->
+    <update id="update">
+        update
+            t_position
+        set
+            sPositionName = #{sPositionName},
+            sRequirement = #{sRequirement},
+            iQuantity = #{iQuantity},
+            sWorkCity = #{sWorkCity},
+            sSalary = #{sSalary},
+            sWelfare = #{sWelfare},
+            sCategoryID = #{sCategoryID},
+            sDepartmentID = #{sDepartmentID},
+            iViews = #{iViews},
+            dUpdateTime = #{dUpdateTime}
+        where
+            id = #{id}
+    </update>
+
+    <!-- 更新已阅人数 -->
+    <update id="updateViews">
+        update
+            t_position
+        set
+            iViews = iViews+1
+        where
+            1=1
+        <if test="id != null and id !=''">
+            and id = #{id}
+        </if>
+    </update>
+
+    <!-- 根据条件查询统计信息 -->
+    <select id="getCount" resultType="int">
+        select
+            count(1)
+        from
+            t_position
+        where
+            1=1
+        <if test="sCategoryID != null and sCategoryID != '' ">
+            and sCategoryID = #{sCategoryID}
+        </if>
+        <if test="sDepartmentID != null and sDepartmentID !=''">
+            and sDepartmentID = #{sDepartmentID}
+        </if>
+    </select>
+
+</mapper>

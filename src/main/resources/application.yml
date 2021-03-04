@@ -1,0 +1,40 @@
+### web
+server:
+  port: 9222
+  servlet:
+    context-path: /talent-recruitment
+  tomcat:
+    uri-encoding: UTF-8
+    max-threads: 100
+    min-spare-threads: 10
+    maxHttpHeaderSize: 102400
+    max-http-form-post-size: -1
+  http:
+    cors: true
+### freemarker
+spring:
+  profiles:
+    active: dev
+  mvc:
+    static-path-pattern: /**
+  resources:
+    static-locations: file:./static/,classpath:/static/
+  jackson:
+    time-zone: GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 30MB
+      max-request-size: 30MB
+  devtools: #�޸ĺ��Ƿ�����
+    restart:
+      enabled: true
+### mybatis
+mybatis:
+  configuration:
+    cache-enabled: true
+    map-underscore-to-camel-case: true
+    call-setters-on-nulls: true
+    #log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  mapper-locations: classpath*:/mapper/**/*.xml
