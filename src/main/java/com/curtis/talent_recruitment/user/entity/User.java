@@ -24,7 +24,7 @@ public class User {
     private String sRealName; //真实姓名
     private String sPhone; //电话号码
     private String sEmail; //电子邮箱
-    private Integer iGender; //性别
+    private Integer iGender; //性别：0女 1男
     private Integer iAge; //年龄
     private String sAvatar; //头像
     private String sProvince; //省份
@@ -33,7 +33,7 @@ public class User {
     private String sMajor; //专业
     private String sEducation; //学历
     private String sSchoolID; //学校id
-    private Integer iRoleType; //角色类型：0管理员，1HR，2求职者
+    private Integer iRoleType; //角色类型：1超级管理员，2HR，3求职者
     private Integer iStatus; //状态：1正常，0被注销
     private String sDirection; //就业方向
     private String sDescription; //描述

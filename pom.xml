@@ -37,6 +37,8 @@
         <hs.tools.db.version>0.0.1</hs.tools.db.version>
         <tools-commons.version>0.0.1</tools-commons.version>
         <springboot.druid.version>1.1.14</springboot.druid.version>
+        <joda-time.version>2.10.5</joda-time.version>
+        <jasypt.version>2.1.0</jasypt.version>
     </properties>
     <dependencies>
         <!-- druid -->
@@ -127,6 +129,13 @@
             <version>${jsonwebtoken.version}</version>
         </dependency>
 
+        <!-- joda-time -->
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>${joda-time.version}</version>
+        </dependency>
+
         <!-- jackson -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -214,6 +223,12 @@
             <groupId>com.hs.tools</groupId>
             <artifactId>tools-commons</artifactId>
             <version>${tools-commons.version}</version>
+        </dependency>
+        <!--加密-->
+        <dependency>
+            <groupId>com.github.ulisesbocchio</groupId>
+            <artifactId>jasypt-spring-boot-starter</artifactId>
+            <version>${jasypt.version}</version>
         </dependency>
     </dependencies>
 

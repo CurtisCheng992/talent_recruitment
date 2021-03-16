@@ -9,24 +9,23 @@ import com.curtis.talent_recruitment.entity.response.code.ResponseCode;
  */
 public enum ApplicationCode implements ResponseCode {
 
-    APPLICATION_NOT_FOUND ( false, 80001, "查询不到申请信息！" ),
-    INSERT_FAIL( false, 80002, "新增申请信息失败！" ),
-    DELETE_FAIL( false, 80003, "删除申请信息失败！" ),
-    UPDATE_FAIL( false, 80004, "更新申请信息失败！" ),
-    INVALID_PARAM( false, 80005, "部分参数不能为空！" ),
-    RESUME_NOT_FOUND( false, 80006, "找不到该简历！" ),
-    POSITION_NOT_FOUND( false, 80007, "找不到该职位！" ),
-    HR_NOT_FOUND( false, 80008, "找不到该HR用户！" );
+    APPLICATION_NOT_FOUND(false, 13001, "查询不到申请信息！"),
+    INSERT_FAIL(false, 13002, "新增申请信息失败！"),
+    DELETE_FAIL(false, 13003, "删除申请信息失败！"),
+    UPDATE_FAIL(false, 13004, "更新申请信息失败！"),
+    INVALID_PARAM(false, 13005, "部分参数不能为空！"),
+    RESUME_NOT_FOUND(false, 13006, "找不到该简历！"),
+    POSITION_NOT_FOUND(false, 13007, "找不到该职位！"),
+    HR_NOT_FOUND(false, 13008, "找不到该HR用户！");
 
+    private boolean success;
+    private int code;
+    private String message;
     ApplicationCode(boolean success, int code, String message) {
         this.success = success;
         this.code = code;
         this.message = message;
     }
-
-    private boolean success;
-    private int code;
-    private String message;
 
     @Override
     public boolean success() {

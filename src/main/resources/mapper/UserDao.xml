@@ -64,6 +64,15 @@
 			<if test="sUsername !=null and sUsername != ''">
 				and sUsername = #{sUsername}
 			</if>
+			<if test="sPassword !=null and sPassword !=''">
+				and sPassword = #{sPassword}
+			</if>
+			<if test="sEmail != null and sEmail != ''">
+				and sEmail = #{sEmail}
+			</if>
+			<if test="sPhone != null and sPhone != ''">
+				and sPhone = #{sPhone}
+			</if>
 		</where>
 	</select>
 

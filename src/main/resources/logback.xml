@@ -3,7 +3,7 @@
     <!--日志存放路径,勿使用相对路径-->
     <property name="app.log.home" value="logs"/>
     <!--APP名称-->
-    <property name="app.name" value="shop"/>
+    <property name="app.name" value="talent_recruitment"/>
     <!--日志级别-->
     <property name="log.level" value="INFO"/>
 

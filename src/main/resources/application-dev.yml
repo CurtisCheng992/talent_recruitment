@@ -51,3 +51,18 @@ logging:
     com.yixuetang: debug
   file:
     name: log/talent-recruitment-dev.log
+
+tr:
+  jwt:
+    secret: ENC(YKsuzaRh9wxvSPUYoxdZbNI7UWvy7WBgn8Ki2BF03iw=) # 登录校验的密钥
+    pubKeyPath: D:\\data\\rsa\\rsa.pub # 公钥地址
+    priKeyPath: D:\\data\\rsa\\rsa.pri # 私钥地址
+    expire: 720 # 过期时间，单位分钟，默认为 900 = 60 * 12 即 12个小时
+    userCookieName: TR_USER_AUTH # 普通用户鉴权的 cookie 名称
+    adminCookieName: TR_ADMIN_AUTH # 管理员鉴权的 cookie 名称
+    cookieMaxAge: 43200 # cookie 最大存活时间，单位秒，默认为 43200 = 60 * 60 * 12 即 12 个小时
+    sms:
+      accessKeyId: ENC(Ow/mUfbTm5er0W6d0Xu1qRsPSvJbT4DZJe265hyOvTGQAAVXfpxFMw==) # accessKeyId
+      accessKeySecret: ENC(14dssZ3c/4duecBHqKSQ48eqrirA4vIC0uDAE+iEatP8IjTPD6I6dg==) # accessKeySecret
+      signName: 有趣的pava # 签名名称
+      verifyCodeTemplate: SMS_205139380 # 模板名称

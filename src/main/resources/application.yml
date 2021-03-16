@@ -22,14 +22,29 @@ spring:
   jackson:
     time-zone: GMT+8
     date-format: yyyy-MM-dd HH:mm:ss
+    serialization:
+      FAIL_ON_EMPTY_BEANS: false
   servlet:
     multipart:
       enabled: true
       max-file-size: 30MB
       max-request-size: 30MB
-  devtools: #�޸ĺ��Ƿ�����
+  devtools: #修改后是否重启
     restart:
       enabled: true
+  mail:
+    host: ENC(WaLpFXYKnKRNAsG1/p6McGLJrmMYyYN9)
+    username: ENC(FRmnejafWbckb2gjtRaFBjY7S0CIkaK2L5v16Ggurl4=)
+    password: ENC(d92dIj8dWEA9GQdto86LcTs4ZtmUqvTum4J4SccS8vQ=)
+    port: 465
+    properties:
+      mail:
+        smtp:
+          ssl:
+            enable: true
+    redis:
+      host: ENC(JmhF3pQKjAFkAWINTU6xxoRWrSbnobAsv2hH1dIVLPo=)
+      password: ENC(DQbbWt9QvtuFFkCfuAsLeAbF8qeOB2Wm)
 ### mybatis
 mybatis:
   configuration:

@@ -1,12 +1,15 @@
 package com.curtis.talent_recruitment.user.controller;
 
 import com.curtis.talent_recruitment.api.user.UserControllerApi;
+import com.curtis.talent_recruitment.entity.request.auth.LoginUser;
 import com.curtis.talent_recruitment.entity.request.user.AddHR;
 import com.curtis.talent_recruitment.entity.request.user.AddUser;
 import com.curtis.talent_recruitment.entity.request.user.UpdateUser;
 import com.curtis.talent_recruitment.entity.response.CommonResponse;
 import com.curtis.talent_recruitment.entity.response.QueryResponse;
+import com.curtis.talent_recruitment.entity.response.code.CommonCode;
 import com.curtis.talent_recruitment.user.service.IUserService;
+import com.curtis.talent_recruitment.utils.exception.ExceptionThrowUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,6 +92,22 @@ public class UserController implements UserControllerApi {
     @PutMapping("update/{id}")
     public CommonResponse update(@PathVariable String id, @RequestBody UpdateUser updateUser) {
         return userService.update(id,updateUser);
+    }
+
+    /**
+     * 发送验证码
+     * @param sendType
+     * @param codeType
+     * @param loginUser
+     * @return
+     */
+    @Override
+    @PostMapping("code/{sendType}/{codeType}")
+    public CommonResponse sendCode(@PathVariable int sendType, @PathVariable int codeType, @RequestBody LoginUser loginUser) {
+        if (sendType !=1 && sendType !=2){
+            ExceptionThrowUtils.cast(CommonCode.INVALID_PARAM);
+        }
+        return userService.sendCode(loginUser, sendType, codeType);
     }
 
 }

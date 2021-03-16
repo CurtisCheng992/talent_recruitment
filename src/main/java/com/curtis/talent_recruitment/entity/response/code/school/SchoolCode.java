@@ -9,7 +9,7 @@ import com.curtis.talent_recruitment.entity.response.code.ResponseCode;
  */
 public enum SchoolCode implements ResponseCode {
 
-    SCHOOL_NOT_FOUND( false, 20001, "查询不到学校！");
+    SCHOOL_NOT_FOUND( false, 11001, "查询不到学校！");
 
     private boolean success;
     private int code;

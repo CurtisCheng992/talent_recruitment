@@ -6,6 +6,7 @@ import com.curtis.talent_recruitment.category.entity.Category;
 import com.curtis.talent_recruitment.collection.dao.CollectionDao;
 import com.curtis.talent_recruitment.comment.dao.CommentDao;
 import com.curtis.talent_recruitment.department.dao.UserDepartmentDao;
+import com.curtis.talent_recruitment.entity.request.auth.LoginUser;
 import com.curtis.talent_recruitment.entity.request.user.AddHR;
 import com.curtis.talent_recruitment.entity.request.user.AddUser;
 import com.curtis.talent_recruitment.entity.request.user.UpdateUser;
@@ -24,6 +25,8 @@ import com.curtis.talent_recruitment.utils.exception.ExceptionThrowUtils;
 import com.hs.commons.utils.ConvertUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -61,6 +64,22 @@ public class UserServiceImpl implements IUserService {
 
     @Autowired
     private CommentDao commentDao;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger( UserServiceImpl.class );
+
+    private static final String LOGIN_KEY_PREFIX = "user:code:login:";
+
+    private static final String REGISTER_KEY_PREFIX = "user:code:register";
+
+    private static final String MODIFY_KEY_PREFIX = "user:code:modify:";
+
+    private static final String CHANGE_KEY_PREFIX = "user:code:change:";
+
+    private final List<Integer> SEND_TYPE = new ArrayList<>(Arrays.asList( 1, 2 ));
+
+    private final List<Long> ROLE_ID_LIST = new ArrayList<>(Arrays.asList( 1L, 2L, 3L ));
+
+    private final List<Integer> CODE_TYPE = new ArrayList<>(Arrays.asList( 1, 2, 3, 4 ));
 
     /**
      * 查询所有用户
@@ -115,9 +134,7 @@ public class UserServiceImpl implements IUserService {
             !StringUtils.isNoneBlank(addUser.getSPassword()) ||
             !StringUtils.isNoneBlank(addUser.getSRealName()) ||
             !StringUtils.isNoneBlank(addUser.getSPhone()) ||
-            !StringUtils.isNoneBlank(addUser.getSEmail()) ||
-            addUser.getIGender() == null ||
-            (addUser.getIGender()!=0 && addUser.getIGender()!=1)
+            !StringUtils.isNoneBlank(addUser.getSEmail())
         ){
             ExceptionThrowUtils.cast(UserCode.INVALID_PARAM);
         }
@@ -134,7 +151,7 @@ public class UserServiceImpl implements IUserService {
         BeanUtils.copyProperties(addUser, user);
         user.setId(com.hs.commons.utils.StringUtils.getUUIDString());
         user.setIStatus(1);
-        user.setIRoleType(2);
+        user.setIRoleType(3);
         Date date = new Date();
         user.setDCreateTime(date);
         user.setDUpdateTime(date);
@@ -164,9 +181,7 @@ public class UserServiceImpl implements IUserService {
                 !StringUtils.isNoneBlank(addHR.getSPassword()) ||
                 !StringUtils.isNoneBlank(addHR.getSRealName()) ||
                 !StringUtils.isNoneBlank(addHR.getSPhone()) ||
-                !StringUtils.isNoneBlank(addHR.getSEmail()) ||
-                addHR.getIGender() == null ||
-                (addHR.getIGender()!=0 && addHR.getIGender()!=1)
+                !StringUtils.isNoneBlank(addHR.getSEmail())
         ){
             ExceptionThrowUtils.cast(UserCode.INVALID_PARAM);
         }
@@ -183,7 +198,7 @@ public class UserServiceImpl implements IUserService {
         BeanUtils.copyProperties(addHR, user);
         user.setId(com.hs.commons.utils.StringUtils.getUUIDString());
         user.setIStatus(1);
-        user.setIRoleType(1);
+        user.setIRoleType(2);
         Date date = new Date();
         user.setDCreateTime(date);
         user.setDUpdateTime(date);
@@ -266,8 +281,7 @@ public class UserServiceImpl implements IUserService {
             !StringUtils.isNoneBlank(updateUser.getSRealName()) ||
             !StringUtils.isNoneBlank(updateUser.getSPhone()) ||
             !StringUtils.isNoneBlank(updateUser.getSEmail()) ||
-            updateUser.getIGender() == null || updateUser.getIStatus() == null ||
-            (updateUser.getIGender()!=0 && updateUser.getIGender()!=1) ||
+            updateUser.getIStatus() == null ||
             (updateUser.getIStatus()!=0 && updateUser.getIStatus()!=1)
         ){
             ExceptionThrowUtils.cast(UserCode.INVALID_PARAM);
@@ -311,5 +325,28 @@ public class UserServiceImpl implements IUserService {
             return new CommonResponse(UserCode.UPDATE_FAIL);
         }
         return new CommonResponse(CommonCode.SUCCESS);
+    }
+
+    /**
+     * 发送验证码
+     *
+     * @param loginUser
+     * @param sendType
+     * @param codeType
+     * @return
+     */
+    @Override
+    public CommonResponse sendCode(LoginUser loginUser, int sendType, int codeType) {
+        //登录实体类或者sendType、codeType参数验证
+        if (ObjectUtils.isEmpty(loginUser) || !SEND_TYPE.contains( sendType ) || !CODE_TYPE.contains( codeType )){
+            ExceptionThrowUtils.cast(CommonCode.INVALID_PARAM);
+        }
+
+        User user;
+
+        //生成六位数字验证码
+        String code
+
+        return null;
     }
 }
