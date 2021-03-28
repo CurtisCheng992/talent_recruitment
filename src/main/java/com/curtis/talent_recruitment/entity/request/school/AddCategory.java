@@ -1,5 +1,6 @@
 package com.curtis.talent_recruitment.entity.request.school;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 /**
@@ -14,8 +15,11 @@ import lombok.*;
 @ToString
 public class AddCategory {
 
+    @JsonProperty("sCategoryName")
     private String sCategoryName;
+    @JsonProperty("sDescription")
     private String sDescription;
+    @JsonProperty("sParentID")
     private String sParentID;
 
 }

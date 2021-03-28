@@ -29,12 +29,12 @@
             t_resume
         (
             id, sUserID, sPicture, sPersonalSummary, sEducationExperience, sAbility,
-            sWorkExperience, sCertificate, sJobDesire, sSkillsAndOthers, dCreateTime, dUpdateTIme
+            sWorkExperience, sCertificate, sJobDesire, sSkillsAndOthers, dCreateTime, dUpdateTime
         )
         values
         (
             #{id},#{sUserID},#{sPicture},#{sPersonalSummary},#{sEducationExperience},#{sAbility},
-            #{sWorkExperience},#{sCertificate},#{sJobDesire},#{sSkillsAndOthers},#{dCreateTime},#{dUpdateTIme}
+            #{sWorkExperience},#{sCertificate},#{sJobDesire},#{sSkillsAndOthers},#{dCreateTime},#{dUpdateTime}
         )
     </insert>
 
@@ -50,17 +50,38 @@
     <update id="update">
         update
             t_resume
-        set
-            sUserID = #{sUserID},
-            sPicture = #{sPicture},
-            sPersonalSummary = #{sPersonalSummary},
-            sEducationExperience = #{sEducationExperience},
-            sAbility = #{sAbility},
-            sWorkExperience = #{sWorkExperience},
-            sCertificate = #{sCertificate},
-            sJobDesire = #{sJobDesire},
-            sSkillsAndOthers = #{sSkillsAndOthers},
-            dUpdateTime = #{dUpdateTime}
+        <set>
+            <if test="sUserID != null">
+                sUserID = #{sUserID},
+            </if>
+            <if test="sPicture != null">
+                sPicture = #{sPicture},
+            </if>
+            <if test="sPersonalSummary != null">
+                sPersonalSummary = #{sPersonalSummary},
+            </if>
+            <if test="sEducationExperience != null">
+                sEducationExperience = #{sEducationExperience},
+            </if>
+            <if test="sAbility != null">
+                sAbility = #{sAbility},
+            </if>
+            <if test="sWorkExperience != null">
+                sWorkExperience = #{sWorkExperience},
+            </if>
+            <if test="sCertificate != null">
+                sCertificate = #{sCertificate},
+            </if>
+            <if test="sJobDesire != null">
+                sJobDesire = #{sJobDesire},
+            </if>
+            <if test="sSkillsAndOthers != null">
+                sSkillsAndOthers = #{sSkillsAndOthers},
+            </if>
+            <if test="dUpdateTime != null">
+                dUpdateTime = #{dUpdateTime}
+            </if>
+        </set>
         where
             id = #{id}
     </update>
@@ -76,6 +97,17 @@
         <if test="sUserID != null and sUserID != ''">
             and sUserID = #{sUserID}
         </if>
+    </select>
+
+    <!--根据用户id查询一个简历信息-->
+    <select id="getByUserID" resultType="com.curtis.talent_recruitment.resume.entity.Resume">
+        select
+            id, sUserID, sPicture, sPersonalSummary, sEducationExperience, sAbility,
+            sWorkExperience, sCertificate, sJobDesire, sSkillsAndOthers, dCreateTime, dUpdateTIme
+        from
+            t_resume
+        where
+            sUserID = #{sUserID}
     </select>
 
 </mapper>

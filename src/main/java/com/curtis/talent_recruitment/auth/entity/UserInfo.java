@@ -1,8 +1,7 @@
 package com.curtis.talent_recruitment.auth.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.*;
 
 /**
  * @Author: Curtis
@@ -10,16 +9,26 @@ import lombok.NoArgsConstructor;
  * @Date: Created in 5:49 PM 3/9/2021
  */
 @Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserInfo {
 
+    @JsonProperty("id")
     private String id;
+    @JsonProperty("sUsername")
     private String sUsername;
+    @JsonProperty("isHR")
     private Boolean isHR;
-    private String avatar;
-    private Boolean rememberMe;
-    private Integer status;
+    @JsonProperty("sAvatar")
+    private String sAvatar;
+    @JsonProperty("bRememberMe")
+    private Boolean bRememberMe;
+    @JsonProperty("iStatus")
+    private Integer iStatus;
+    @JsonProperty("sRealName")
+    private String sRealName;
 
     public UserInfo(String id, String sUsername) {
         this.id = id;

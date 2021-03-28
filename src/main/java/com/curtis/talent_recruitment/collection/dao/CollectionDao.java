@@ -59,4 +59,19 @@ public interface CollectionDao {
      */
     int getCount(Map<String, Object> mpParam);
 
+    /**
+     * 根据用户id查询收藏信息
+     *
+     * @param mpParam
+     * @return
+     */
+    List<Collection> getListByUserID(Map<String, Object> mpParam);
+
+    /**
+     * 根据条件删除一条收藏
+     *
+     * @param mpParam
+     * @return
+     */
+    int deleteByCondition(Map<String, Object> mpParam);
 }

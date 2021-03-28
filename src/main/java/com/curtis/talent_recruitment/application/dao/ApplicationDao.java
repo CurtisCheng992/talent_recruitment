@@ -16,8 +16,11 @@ public interface ApplicationDao {
 
     /**
      * 查询所有申请信息
+     *
+     * @param mpParam
+     * @return
      */
-    List<Application> getList();
+    List<Application> getList(Map<String, Object> mpParam);
 
     /**
      * 根据id查询一个申请信息
@@ -58,4 +61,29 @@ public interface ApplicationDao {
      * @return
      */
     int getCount(Map<String, Object> mpParam);
+
+    /**
+     * 根据用户id查询所有申请信息
+     *
+     * @param mpParam
+     * @return
+     */
+    List<Application> getListByUserID(Map<String, Object> mpParam);
+
+    /**
+     * 根据条件删除申请
+     *
+     * @param mpParam
+     * @return
+     */
+    int deleteByCondition(Map<String, Object> mpParam);
+
+    /**
+     * HR审核申请
+     *
+     * @param mpParam
+     * @return
+     */
+    int verify(Map<String, Object> mpParam);
+
 }

@@ -50,4 +50,10 @@ public class ResumeController implements ResumeControllerApi {
     public CommonResponse update(@PathVariable String id, @RequestBody UpdateResume updateResume) {
         return resumeService.update(id, updateResume);
     }
+
+    @Override
+    @GetMapping("get/user/{sUserID}")
+    public QueryResponse getByUserID(@PathVariable String sUserID) {
+        return resumeService.getByUserID(sUserID);
+    }
 }

@@ -23,8 +23,8 @@ public class ApplicationController implements ApplicationControllerApi {
 
     @Override
     @GetMapping("getList")
-    public QueryResponse getList() {
-        return applicationService.getList();
+    public QueryResponse getList(@RequestParam(required = false) String sUserID, @RequestParam(required = false) String sHRID) {
+        return applicationService.getList(sUserID, sHRID);
     }
 
     @Override
@@ -49,5 +49,41 @@ public class ApplicationController implements ApplicationControllerApi {
     @PutMapping("update/{id}")
     public CommonResponse update(@PathVariable String id, @RequestBody UpdateApplication updateApplication) {
         return applicationService.update(id, updateApplication);
+    }
+
+    @Override
+    @GetMapping("getList/user/{sUserID}")
+    public QueryResponse getListByUserID(@PathVariable String sUserID) {
+        return applicationService.getListByUserID(sUserID);
+    }
+
+    @Override
+    @GetMapping("getCount/user/{sUserID}")
+    public QueryResponse getCountByUserID(@PathVariable String sUserID) {
+        return applicationService.getCountByUserID(sUserID);
+    }
+
+    @Override
+    @GetMapping("getCount/position/user/{sPositionID}/{sUserID}")
+    public QueryResponse getCount(@PathVariable String sPositionID, @PathVariable String sUserID) {
+        return applicationService.getCount(sPositionID, sUserID);
+    }
+
+    @Override
+    @DeleteMapping("delete/position/user/{sPositionID}/{sUserID}")
+    public CommonResponse deleteByCondition(@PathVariable String sPositionID, @PathVariable String sUserID) {
+        return applicationService.deleteByCondition(sPositionID, sUserID);
+    }
+
+    @Override
+    @PutMapping("verify/hr/id/{sHRID}/{id}")
+    public CommonResponse VerifyByID(@PathVariable String sHRID, @PathVariable String id) {
+        return applicationService.verify(sHRID, id);
+    }
+
+    @Override
+    @GetMapping("getCount/hr/{sHRID}")
+    public QueryResponse getCountByHR(@PathVariable String sHRID) {
+        return applicationService.getCountByHR(sHRID);
     }
 }

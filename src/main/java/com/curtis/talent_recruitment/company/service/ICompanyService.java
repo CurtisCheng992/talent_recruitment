@@ -47,4 +47,19 @@ public interface ICompanyService {
      */
     CommonResponse update(String id, UpdateCompany updateCompany);
 
+    /**
+     * 可限制数量查询热门企业
+     *
+     * @param iLimit
+     * @return
+     */
+    QueryResponse getHot(Integer iLimit);
+
+    /**
+     * 根据HRID查询公司信息
+     *
+     * @param sHRID
+     * @return
+     */
+    QueryResponse getDetailByHRID(String sHRID);
 }

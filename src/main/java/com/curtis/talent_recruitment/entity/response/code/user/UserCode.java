@@ -22,7 +22,12 @@ public enum UserCode implements ResponseCode {
     DELETE_FAIL_APPLICATION_EXIST( false, 10010, "删除失败，请先删除该用户下的申请！" ),
     DELETE_FAIL_COLLECTION_EXIST( false, 10011, "删除失败，请先删除该用户下的收藏！" ),
     DELETE_FAIL_COMMENT_EXIST( false, 10012, "删除失败，请先删除该用户下的评论！" ),
-    DELETE_FAIL_USER_DEPARTMENT_EXIST( false, 10013, "删除失败，请先删除该用户下的用户-部门！" );
+    DELETE_FAIL_USER_DEPARTMENT_EXIST( false, 10013, "删除失败，请先删除该用户下的用户-部门！" ),
+    PHONE_NOT_REGISTERED( false, 10014, "该手机号码尚未注册，请先进行注册！" ),
+    EMAIL_HAS_BEEN_REGISTERED( false, 10015, "该邮箱地址已被注册！" ),
+    REGISTER_FAIL_CODE_WRONG( false, 10016, "验证码错误！注册失败！" ),
+    REGISTER_FAIL_USERNAME_CONFLICT( false, 10017, "此用户名太受欢迎，请更换一个吧！" ),
+    REGISTER_FAIL_ROLETYPE_NOT_FOUND( false, 10018, "角色类型不存在！" );
 
     private boolean success;
     private int code;

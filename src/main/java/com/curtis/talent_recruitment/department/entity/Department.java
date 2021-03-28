@@ -1,6 +1,7 @@
 package com.curtis.talent_recruitment.department.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 /**
@@ -16,9 +17,13 @@ import lombok.*;
 @ToString
 public class Department {
 
+    @JsonProperty("id")
     private String id; //主键UUID
+    @JsonProperty("sDepartmentName")
     private String sDepartmentName; //部门名称
+    @JsonProperty("sDescription")
     private String sDescription; //部门描述
+    @JsonProperty("sCompanyID")
     private String sCompanyID; //所属公司
 
 }

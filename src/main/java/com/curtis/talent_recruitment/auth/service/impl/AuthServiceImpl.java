@@ -105,7 +105,7 @@ public class AuthServiceImpl implements IAuthService {
         // 如果有查询结果，则生成token
         try {
             token = JwtUtils.generateToken( new UserInfo( user.getId(), user.getSUsername(),
-                            user.getIRoleType() == 2, user.getSAvatar(), rememberMe, user.getIStatus() ),
+                            user.getIRoleType() == 2, user.getSAvatar(), rememberMe, user.getIStatus(), user.getSRealName() ),
                     config.getPrivateKey(), config.getExpire() );
         } catch (Exception e) {
             LOGGER.error( "生成 token 发生异常！异常原因：{}", e.getMessage() );
@@ -114,15 +114,15 @@ public class AuthServiceImpl implements IAuthService {
         return token;
     }
 
-    private boolean checkIfValid(int userType, int roleId) {
+    private boolean checkIfValid(int userType, int iRoleType) {
         switch (userType) {
             case 1: // 管理员登录
-                if (roleId != 1) {
+                if (iRoleType != 1) {
                     return false;
                 }
                 break;
             case 2: // 普通用户登录
-                if (roleId != 2 && roleId != 3) {
+                if (iRoleType != 2 && iRoleType != 3) {
                     return false;
                 }
         }

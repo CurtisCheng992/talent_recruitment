@@ -87,7 +87,7 @@ public class CommentServiceImpl implements ICommentService {
         }
         //参数sContent,sUserID,sPositionID不能为空
         if (!StringUtils.isNoneBlank(addComment.getSContent()) ||
-        !StringUtils.isNoneBlank(addComment.getSParentID()) ||
+        !StringUtils.isNoneBlank(addComment.getSUserID()) ||
         !StringUtils.isNoneBlank(addComment.getSPositionID())){
             ExceptionThrowUtils.cast(CommentCode.INVALID_PARAM);
         }
@@ -119,6 +119,9 @@ public class CommentServiceImpl implements ICommentService {
         mpParam.put("id", com.hs.commons.utils.StringUtils.getUUIDString());
         mpParam.put("dCreateTime", new Date());
         mpParam.put("dUpdateTime", new Date());
+        if (addComment.getSParentID() == ""){
+            mpParam.put("sParentID",null);
+        }
         int iResult = commentDao.add(mpParam);
         if (iResult <= 0){
             return new CommonResponse(CommentCode.INSERT_FAIL);

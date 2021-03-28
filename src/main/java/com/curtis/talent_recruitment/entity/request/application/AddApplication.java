@@ -1,5 +1,6 @@
 package com.curtis.talent_recruitment.entity.request.application;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 /**
@@ -14,9 +15,15 @@ import lombok.*;
 @ToString
 public class AddApplication {
 
+    @JsonProperty("sResumeID")
     private String sResumeID;
+    @JsonProperty("sPositionID")
     private String sPositionID;
+    @JsonProperty("sHRID")
     private String sHRID;
+    @JsonProperty("sUserID")
+    private String sUserID;
+    @JsonProperty("iStatus")
     private Integer iStatus;
 
 }

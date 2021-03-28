@@ -37,4 +37,13 @@ public interface CompanyControllerApi {
             paramType = "path", dataType = "String")
     CommonResponse update(String id, UpdateCompany updateCompany);
 
+    @ApiOperation("限制数量查询热门企业")
+    @ApiImplicitParam(name = "iLimit", value = "查询条数", required = false,
+            paramType = "query", dataType = "Integer")
+    QueryResponse getHot(Integer iLimit);
+
+    @ApiOperation("查询一个公司信息")
+    @ApiImplicitParam(name = "sHRID", value = "HRID", required = true,
+            paramType = "path", dataType = "String")
+    QueryResponse getDetailByHRID(String sHRID);
 }

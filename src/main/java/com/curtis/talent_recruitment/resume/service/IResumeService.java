@@ -52,4 +52,11 @@ public interface IResumeService {
      */
     CommonResponse update(String id, UpdateResume updateResume);
 
+    /**
+     * 根据用户id查询一个简历信息
+     *
+     * @param sUserID
+     * @return
+     */
+    QueryResponse getByUserID(String sUserID);
 }

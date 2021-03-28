@@ -1,5 +1,6 @@
 package com.curtis.talent_recruitment.user.service.impl;
 
+import com.aliyuncs.exceptions.ClientException;
 import com.curtis.talent_recruitment.application.dao.ApplicationDao;
 import com.curtis.talent_recruitment.category.dao.CategoryDao;
 import com.curtis.talent_recruitment.category.entity.Category;
@@ -9,6 +10,7 @@ import com.curtis.talent_recruitment.department.dao.UserDepartmentDao;
 import com.curtis.talent_recruitment.entity.request.auth.LoginUser;
 import com.curtis.talent_recruitment.entity.request.user.AddHR;
 import com.curtis.talent_recruitment.entity.request.user.AddUser;
+import com.curtis.talent_recruitment.entity.request.user.RegisterUser;
 import com.curtis.talent_recruitment.entity.request.user.UpdateUser;
 import com.curtis.talent_recruitment.entity.response.CommonResponse;
 import com.curtis.talent_recruitment.entity.response.QueryResponse;
@@ -22,6 +24,7 @@ import com.curtis.talent_recruitment.user.dao.UserDao;
 import com.curtis.talent_recruitment.user.entity.User;
 import com.curtis.talent_recruitment.user.service.IUserService;
 import com.curtis.talent_recruitment.utils.exception.ExceptionThrowUtils;
+import com.curtis.talent_recruitment.utils.user.*;
 import com.hs.commons.utils.ConvertUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -29,9 +32,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Author: Curtis
@@ -65,6 +72,18 @@ public class UserServiceImpl implements IUserService {
     @Autowired
     private CommentDao commentDao;
 
+    @Autowired
+    private MailUtils mailUtils;
+
+    @Autowired
+    private SmsUtils smsUtils;
+
+    @Autowired
+    private SmsConfig smsConfig;
+
+    @Autowired
+    private StringRedisTemplate redisTemplate;
+
     private static final Logger LOGGER = LoggerFactory.getLogger( UserServiceImpl.class );
 
     private static final String LOGIN_KEY_PREFIX = "user:code:login:";
@@ -89,6 +108,19 @@ public class UserServiceImpl implements IUserService {
     @Override
     public QueryResponse getList() {
         List<User> arrUser = userDao.getList();
+        Map<String, Object> mpGet = new HashMap<>();
+        for (User user : arrUser) {
+            if (StringUtils.isNoneBlank(user.getSSchoolID())){
+                mpGet.put("id",user.getSSchoolID());
+                School school = schoolDao.getDetail(mpGet);
+                user.setSSchoolName(school.getSSchoolName());
+            }
+            if (StringUtils.isNoneBlank(user.getSDirection())){
+                mpGet.put("id",user.getSDirection());
+                Category category = categoryDao.getDetail(mpGet);
+                user.setSDirectionName(category.getSCategoryName());
+            }
+        }
         return new QueryResponse(CommonCode.SUCCESS, new QueryResult(arrUser, arrUser.size()));
     }
 
@@ -108,6 +140,17 @@ public class UserServiceImpl implements IUserService {
         mpParam.put("id", id);
         User user = userDao.getDetail(mpParam);
         List<User> arrUser = Collections.singletonList(user);
+        Map<String, Object> mpGet = new HashMap<>();
+        if (StringUtils.isNoneBlank(user.getSSchoolID())){
+            mpGet.put("id",user.getSSchoolID());
+            School school = schoolDao.getDetail(mpGet);
+            user.setSSchoolName(school.getSSchoolName());
+        }
+        if (StringUtils.isNoneBlank(user.getSDirection())){
+            mpGet.put("id",user.getSDirection());
+            Category category = categoryDao.getDetail(mpGet);
+            user.setSDirectionName(category.getSCategoryName());
+        }
         //找不到用户
         if (ObjectUtils.isEmpty(user)) {
             return new QueryResponse(UserCode.USER_NOT_FOUND, null);
@@ -320,6 +363,9 @@ public class UserServiceImpl implements IUserService {
         mpParam = ConvertUtils.objectToMap(updateUser);
         mpParam.put("dUpdateTime", new Date());
         mpParam.put("id", id);
+        if (updateUser.getBChangePassword() == false){
+            mpParam.remove("sPassword");
+        }
         int iResult = userDao.update(mpParam);
         if (iResult <= 0) {
             return new CommonResponse(UserCode.UPDATE_FAIL);
@@ -345,8 +391,144 @@ public class UserServiceImpl implements IUserService {
         User user;
 
         //生成六位数字验证码
-        String code
+        String code = NumberUtils.generateCode(6);
+        Map<String, Object> mpParam = new HashMap<>();
 
-        return null;
+        switch (sendType){
+            case 1: //发送到手机
+                //phone为非法参数
+                if(!ParamCheckUtils.checkPhone(loginUser.getSPhone())){
+                    return new CommonResponse(CommonCode.INVALID_PARAM);
+                }
+                mpParam.clear();
+                mpParam.put("sPhone",loginUser.getSPhone());
+                user = userDao.getDetail(mpParam);
+                //如果是因登录和修改密码要求发送验证码到手机，先确认该账号已经注册过
+                if ((codeType == 1 || codeType ==3)&& user == null){
+                    return new CommonResponse(UserCode.PHONE_NOT_REGISTERED);
+                }
+                //调用工具类发送验证码到手机
+                try{
+                    smsUtils.sendSms(loginUser.getSPhone(), code, smsConfig.getSignName(), smsConfig.getVerifyCodeTemplate());
+                }catch (ClientException e){
+                    LOGGER.error("发送验证码到用户手机异常！异常原因：{}",e);
+                    ExceptionThrowUtils.cast(CommonCode.SERVER_ERROR);
+                }
+                break;
+            case 2: //发送到邮箱
+                //email为非法参数
+                if (!ParamCheckUtils.checkEmail(loginUser.getSEmail())){
+                    return new CommonResponse(CommonCode.INVALID_PARAM);
+                }
+                mpParam.clear();
+                mpParam.put("sEmail", loginUser.getSEmail());
+                user = userDao.getDetail(mpParam);
+                //如果是因为登录和修改密码要求发送验证码到邮箱，先确认该账号已经注册过
+                if ((codeType == 1 || codeType ==3)&& user == null){
+                    return new CommonResponse(UserCode.EMAIL_NOT_REGISTERED);
+                }
+                // 如果是因注册和换绑邮箱要求发送验证码到邮箱，先确认该账号尚未注册过
+                if ((codeType == 2 || codeType == 4) && user != null) {
+                    return new CommonResponse( UserCode.EMAIL_HAS_BEEN_REGISTERED );
+                }
+                try {
+                    // 发送验证码
+                    mailUtils.sendMail( loginUser.getSEmail(), "【人才招聘系统】验证码",
+                            "【人才招聘系统】您的验证码是" + code + "，用于验证身份、修改密码等，该验证码5分钟内有效，请勿向他人泄露。" );
+                } catch (Exception e) {
+                    LOGGER.error( "发送验证码到用户邮箱地址异常！异常原因：{}", e );
+                    ExceptionThrowUtils.cast( CommonCode.SERVER_ERROR );
+                }
+        }
+
+        // 将验证码存入 redis ，并设置过期时间为 5 分钟
+        String key = sendType == 1 ? loginUser.getSPhone() : loginUser.getSEmail();
+        switch (codeType) {
+            case 1: // 登录验证码
+                this.redisTemplate.opsForValue().set( LOGIN_KEY_PREFIX + key, code, 5, TimeUnit.MINUTES );
+                break;
+            case 2: // 注册验证码
+                this.redisTemplate.opsForValue().set( REGISTER_KEY_PREFIX + key, code, 5, TimeUnit.MINUTES );
+                break;
+            case 3: // 修改密码验证码
+                this.redisTemplate.opsForValue().set( MODIFY_KEY_PREFIX + key, code, 5, TimeUnit.MINUTES );
+                break;
+            case 4: // 换绑邮箱/手机验证码
+                this.redisTemplate.opsForValue().set( CHANGE_KEY_PREFIX + key, code, 5, TimeUnit.MINUTES );
+                break;
+        }
+        return new CommonResponse( CommonCode.SUCCESS );
+    }
+
+    /**
+     * 注册用户
+     *
+     * @param registerUser
+     * @return
+     */
+    @Override
+    @Transactional
+    public CommonResponse register(RegisterUser registerUser) {
+        if (ObjectUtils.isEmpty(registerUser)){
+            ExceptionThrowUtils.cast(CommonCode.INVALID_PARAM);
+        }
+        //邮箱检验
+        Map<String, Object> mpParam = new HashMap<>();
+        mpParam.put("sEmail",registerUser.getSEmail());
+        if (!ObjectUtils.isEmpty(userDao.getDetail(mpParam))){
+            return new CommonResponse(UserCode.EMAIL_HAS_BEEN_REGISTERED);
+        }
+        //验证码检验
+        if (!StringUtils.equals(registerUser.getCode(),this.redisTemplate.opsForValue().get(REGISTER_KEY_PREFIX+registerUser.getSEmail()))){
+            return new CommonResponse(UserCode.REGISTER_FAIL_CODE_WRONG);
+        }
+        //用户名验证
+        mpParam.clear();
+        mpParam.put("sUsername",registerUser.getSUsername());
+        User foundUser = userDao.getDetail(mpParam);
+        if (!ObjectUtils.isEmpty(foundUser)){
+            return new CommonResponse(UserCode.REGISTER_FAIL_USERNAME_CONFLICT);
+        }
+        //角色类型验证
+        if (registerUser.getIRoleType()!=1 && registerUser.getIRoleType()!=2 && registerUser.getIRoleType()!=3){
+            return new CommonResponse(UserCode.REGISTER_FAIL_ROLETYPE_NOT_FOUND);
+        }
+        //将用户存入数据库
+        User user = User.builder().id(com.hs.commons.utils.StringUtils.getUUIDString())
+                .sUsername(registerUser.getSUsername())
+                .sPassword(registerUser.getSPassword())
+                .sRealName(registerUser.getSRealName())
+                .sPhone(registerUser.getSEmail())
+                .sEmail(registerUser.getSEmail())
+                .iGender(registerUser.getIGender())
+                .iAge(registerUser.getIAge())
+                .sAvatar(registerUser.getSAvatar())
+                .sProvince(registerUser.getSProvince())
+                .sCity(registerUser.getSCity())
+                .iGraduationYear(registerUser.getIGraduationYear())
+                .sMajor(registerUser.getSMajor())
+                .sEducation(registerUser.getSEducation())
+                .sSchoolID(registerUser.getSSchoolID())
+                .iRoleType(registerUser.getIRoleType())
+                .iStatus(1)
+                .sDirection(registerUser.getSDirection())
+                .sDescription(registerUser.getSDescription())
+                .dCreateTime(new Date())
+                .dUpdateTime(new Date())
+                .build();
+        Map<String, Object> mpAdd = ConvertUtils.objectToMap(user);
+        int iResultAdd = userDao.add(mpAdd);
+
+        registerCount();
+
+        return new CommonResponse(CommonCode.SUCCESS);
+    }
+
+    private void registerCount() {
+        SimpleDateFormat sdf = new SimpleDateFormat( "yyyy-MM-dd" );
+        String dateKey = "count:rg:" + sdf.format( new Date() );
+        redisTemplate.opsForValue().setIfAbsent( dateKey, "0", 25L, TimeUnit.HOURS );
+        redisTemplate.opsForValue().increment( dateKey );
+        redisTemplate.opsForValue().increment( "count:rg" );
     }
 }

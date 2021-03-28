@@ -3,10 +3,10 @@ package com.curtis.talent_recruitment.utils.user;
 import java.util.Random;
 
 /**
- * @author Colin
+ * @author Curtis
  * @version 1.0.0
  * @description 数字工具类
- * @date 2020/10/25 16:20
+ * @date 2021/3/16 16:20
  */
 public class NumberUtils {
 

@@ -1,5 +1,6 @@
 package com.curtis.talent_recruitment.entity.request.collection;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 /**
@@ -14,7 +15,9 @@ import lombok.*;
 @ToString
 public class AddCollection {
 
+    @JsonProperty("sUserID")
     private String sUserID; //用户id
+    @JsonProperty("sPositionID")
     private String sPositionID; //职位id
 
 }

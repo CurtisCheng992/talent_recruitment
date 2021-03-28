@@ -6,6 +6,7 @@ import com.curtis.talent_recruitment.entity.response.CommonResponse;
 import com.curtis.talent_recruitment.entity.response.QueryResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 
 /**
@@ -36,5 +37,33 @@ public interface CollectionControllerApi {
     @ApiImplicitParam(name = "id", value = "收藏主键id", required = true,
             paramType = "path", dataType = "String")
     CommonResponse update(String id, UpdateCollection updateCollection);
+
+    @ApiOperation("根据用户id查询所有收藏信息")
+    @ApiImplicitParam(name = "sUserID", value = "用户id", required = true,
+            paramType = "path", dataType = "String")
+    QueryResponse getListByUserID(String sUserID);
+
+    @ApiOperation("获取收藏数量")
+    @ApiImplicitParam(name = "sUserID", value = "用户id", required = true,
+            paramType = "path", dataType = "String")
+    QueryResponse getCountByUserID(String sUserID);
+
+    @ApiOperation("根据条件删除一个收藏")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "sPositionID", value = "职位id", required = true,
+                    paramType = "path", dataType = "String"),
+            @ApiImplicitParam(name = "sUserID", value = "用户id", required = true,
+                    paramType = "path", dataType = "String")
+    })
+    CommonResponse deleteByCondition(String sPositionID, String sUserID);
+
+    @ApiOperation("判断该用户是否收藏过此职位")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "sPositionID", value = "职位id", required = true,
+                    paramType = "path", dataType = "String"),
+            @ApiImplicitParam(name = "sUserID", value = "用户id", required = true,
+                    paramType = "path", dataType = "String")
+    })
+    QueryResponse getCount(String sPositionID, String sUserID);
 
 }

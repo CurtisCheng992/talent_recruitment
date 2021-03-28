@@ -16,7 +16,11 @@ public enum ApplicationCode implements ResponseCode {
     INVALID_PARAM(false, 13005, "部分参数不能为空！"),
     RESUME_NOT_FOUND(false, 13006, "找不到该简历！"),
     POSITION_NOT_FOUND(false, 13007, "找不到该职位！"),
-    HR_NOT_FOUND(false, 13008, "找不到该HR用户！");
+    HR_NOT_FOUND(false, 13008, "找不到该HR用户！"),
+    USER_NOT_FOUND( false, 13009, "找不到该申请用户！" ),
+    NOT_THE_HR_OF_APPLICATION( false, 13010, "该用户不是该申请的HR" ),
+    VERIFY_FAIL( false, 13011, "申请审核失败！" ),
+    USER_IS_NOT_HR( false, 13012, "该用户不是HR!" );
 
     private boolean success;
     private int code;

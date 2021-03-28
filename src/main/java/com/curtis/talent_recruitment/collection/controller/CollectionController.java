@@ -50,4 +50,29 @@ public class CollectionController implements CollectionControllerApi {
     public CommonResponse update(@PathVariable String id, @RequestBody UpdateCollection updateCollection) {
         return collectionService.update(id, updateCollection);
     }
+
+    @Override
+    @GetMapping("getList/user/{sUserID}")
+    public QueryResponse getListByUserID(@PathVariable String sUserID) {
+        return collectionService.getListByUserID(sUserID);
+    }
+
+    @Override
+    @GetMapping("getCount/user/{sUserID}")
+    public QueryResponse getCountByUserID(@PathVariable String sUserID){
+        return collectionService.getCountByUserID(sUserID);
+    }
+
+    @Override
+    @DeleteMapping("delete/position/user/{sPositionID}/{sUserID}")
+    public CommonResponse deleteByCondition(@PathVariable String sPositionID, @PathVariable String sUserID) {
+        return collectionService.deleteByCondition(sPositionID, sUserID);
+    }
+
+    @Override
+    @GetMapping("getCount/position/user/{sPositionID}/{sUserID}")
+    public QueryResponse getCount(@PathVariable String sPositionID, @PathVariable String sUserID) {
+        return collectionService.getCount(sPositionID, sUserID);
+    }
+
 }

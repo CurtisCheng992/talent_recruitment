@@ -4,6 +4,7 @@ import com.curtis.talent_recruitment.api.user.UserControllerApi;
 import com.curtis.talent_recruitment.entity.request.auth.LoginUser;
 import com.curtis.talent_recruitment.entity.request.user.AddHR;
 import com.curtis.talent_recruitment.entity.request.user.AddUser;
+import com.curtis.talent_recruitment.entity.request.user.RegisterUser;
 import com.curtis.talent_recruitment.entity.request.user.UpdateUser;
 import com.curtis.talent_recruitment.entity.response.CommonResponse;
 import com.curtis.talent_recruitment.entity.response.QueryResponse;
@@ -31,6 +32,7 @@ public class UserController implements UserControllerApi {
 
     /**
      * 查询所有用户
+     *
      * @return
      */
     @Override
@@ -41,6 +43,7 @@ public class UserController implements UserControllerApi {
 
     /**
      * 根据id查询一个用户
+     *
      * @param id
      * @return
      */
@@ -52,6 +55,7 @@ public class UserController implements UserControllerApi {
 
     /**
      * 新增求职者用户
+     *
      * @param addUser
      * @return
      */
@@ -63,6 +67,7 @@ public class UserController implements UserControllerApi {
 
     /**
      * 新增HR用户
+     *
      * @param addHR
      * @return
      */
@@ -74,6 +79,7 @@ public class UserController implements UserControllerApi {
 
     /**
      * 根据id删除用户
+     *
      * @param id
      * @return
      */
@@ -85,6 +91,7 @@ public class UserController implements UserControllerApi {
 
     /**
      * 更新用户
+     *
      * @param updateUser
      * @return
      */
@@ -96,6 +103,7 @@ public class UserController implements UserControllerApi {
 
     /**
      * 发送验证码
+     *
      * @param sendType
      * @param codeType
      * @param loginUser
@@ -108,6 +116,18 @@ public class UserController implements UserControllerApi {
             ExceptionThrowUtils.cast(CommonCode.INVALID_PARAM);
         }
         return userService.sendCode(loginUser, sendType, codeType);
+    }
+
+    /**
+     * 注册用户
+     *
+     * @param registerUser
+     * @return
+     */
+    @Override
+    @PostMapping("register")
+    public CommonResponse register(@RequestBody RegisterUser registerUser) {
+        return userService.register( registerUser );
     }
 
 }

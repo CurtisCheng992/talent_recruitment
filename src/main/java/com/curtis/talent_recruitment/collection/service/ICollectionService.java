@@ -52,4 +52,37 @@ public interface ICollectionService {
      */
     CommonResponse update(String id, UpdateCollection updateCollection);
 
+    /**
+     * 根据用户id查询一条收藏信息
+     *
+     * @param sUserID
+     * @return
+     */
+    QueryResponse getListByUserID(String sUserID);
+
+    /**
+     * 根据用户id查询收藏记录条数
+     *
+     * @param sUserID
+     * @return
+     */
+    QueryResponse getCountByUserID(String sUserID);
+
+    /**
+     * 根据条件删除一条收藏
+     *
+     * @param sPositionID
+     * @param sUserID
+     * @return
+     */
+    CommonResponse deleteByCondition(String sPositionID, String sUserID);
+
+    /**
+     * 判断该用户是否收藏过此职位
+     *
+     * @param sPositionID
+     * @param sUserID
+     * @return
+     */
+    QueryResponse getCount(String sPositionID, String sUserID);
 }

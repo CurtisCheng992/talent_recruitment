@@ -8,10 +8,10 @@ import org.springframework.stereotype.Component;
 import javax.mail.internet.MimeMessage;
 
 /**
- * @author Colin
+ * @author Curtis
  * @version 1.0.0
  * @description 邮件工具类
- * @date 2020/10/25 16:25
+ * @date 2021/3/16 16:25
  */
 @Component
 public class MailUtils {

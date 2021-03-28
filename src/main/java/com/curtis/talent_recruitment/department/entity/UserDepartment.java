@@ -1,6 +1,7 @@
 package com.curtis.talent_recruitment.department.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 /**
@@ -16,8 +17,11 @@ import lombok.*;
 @ToString
 public class UserDepartment {
 
+    @JsonProperty("id")
     private String id; //主键UUID
+    @JsonProperty("sUserID")
     private String sUserID; //用户id
+    @JsonProperty("sDepartmentID")
     private String sDepartmentID; //部门id
 
 }

@@ -15,10 +15,10 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.stereotype.Component;
 
 /**
- * @author Colin
+ * @author Curtis
  * @version 1.0.0
  * @description Sms 发送短信工具类
- * @date 2020/10/29 17:24
+ * @date 2021/3/16 17:24
  */
 @Component
 @EnableConfigurationProperties(SmsConfig.class)

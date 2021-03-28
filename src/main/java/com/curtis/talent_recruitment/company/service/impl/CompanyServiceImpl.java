@@ -11,6 +11,9 @@ import com.curtis.talent_recruitment.entity.response.QueryResponse;
 import com.curtis.talent_recruitment.entity.response.code.CommonCode;
 import com.curtis.talent_recruitment.entity.response.code.company.CompanyCode;
 import com.curtis.talent_recruitment.entity.response.result.QueryResult;
+import com.curtis.talent_recruitment.position.dao.PositionDao;
+import com.curtis.talent_recruitment.user.dao.UserDao;
+import com.curtis.talent_recruitment.user.entity.User;
 import com.curtis.talent_recruitment.utils.exception.ExceptionThrowUtils;
 import com.hs.commons.utils.ConvertUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -34,6 +37,12 @@ public class CompanyServiceImpl implements ICompanyService {
     @Autowired
     private DepartmentDao departmentDao;
 
+    @Autowired
+    private PositionDao positionDao;
+
+    @Autowired
+    private UserDao userDao;
+
     /**
      * 查询所有公司信息
      * @return
@@ -41,6 +50,12 @@ public class CompanyServiceImpl implements ICompanyService {
     @Override
     public QueryResponse getList() {
         List<Company> arrCompany = companyDao.getList();
+        Map<String, Object> mpGet = new HashMap<>();
+        for (Company company : arrCompany) {
+            mpGet.put("sCompanyID", company.getId());
+            Integer iSum = positionDao.getSumByCompanyID(mpGet);
+            company.setITotalQuantity(iSum);
+        }
         return new QueryResponse(CommonCode.SUCCESS, new QueryResult(arrCompany,arrCompany.size()));
     }
 
@@ -62,6 +77,10 @@ public class CompanyServiceImpl implements ICompanyService {
         if (ObjectUtils.isEmpty(company)){
             return new QueryResponse(CompanyCode.COMPANY_NOT_FOUND,null);
         }
+        Map<String, Object> mpGet = new HashMap<>();
+        mpGet.put("sCompanyID", company.getId());
+        Integer iSum = positionDao.getSumByCompanyID(mpGet);
+        company.setITotalQuantity(iSum);
         List<Company> arrCompany = new ArrayList<>();
         arrCompany.add(company);
         return new QueryResponse(CommonCode.SUCCESS, new QueryResult(arrCompany,arrCompany.size()));
@@ -88,6 +107,7 @@ public class CompanyServiceImpl implements ICompanyService {
         mpParam.put("id", com.hs.commons.utils.StringUtils.getUUIDString());
         mpParam.put("dCreateTime", new Date());
         mpParam.put("dUpdateTime", new Date());
+        mpParam.put("iStatus", 0);
         int iResult = companyDao.add(mpParam);
         if (iResult <= 0){
             return new CommonResponse(CompanyCode.INSERT_FAIL);
@@ -160,5 +180,53 @@ public class CompanyServiceImpl implements ICompanyService {
             return new CommonResponse(CompanyCode.UPDATE_FAIL);
         }
         return new CommonResponse(CommonCode.SUCCESS);
+    }
+
+    /**
+     * 可限制数量查询热门企业
+     *
+     * @param iLimit
+     * @return
+     */
+    @Override
+    public QueryResponse getHot(Integer iLimit) {
+        //查询
+        Map<String, Object> mpParam = new HashMap<>();
+        mpParam.put("iLimit",iLimit);
+        List<Company> arrCompany = companyDao.getHot(mpParam);
+        Map<String, Object> mpGet = new HashMap<>();
+        for (Company company : arrCompany) {
+            mpGet.put("sCompanyID", company.getId());
+            Integer iSum = positionDao.getSumByCompanyID(mpGet);
+            company.setITotalQuantity(iSum);
+        }
+        return new QueryResponse(CommonCode.SUCCESS, new QueryResult(arrCompany, arrCompany.size()));
+    }
+
+    /**
+     * 根据HRID查询公司信息
+     *
+     * @param sHRID
+     * @return
+     */
+    @Override
+    public QueryResponse getDetailByHRID(String sHRID) {
+        //参数非空判断
+        if (!StringUtils.isNoneBlank(sHRID)){
+            ExceptionThrowUtils.cast(CommonCode.INVALID_PARAM);
+        }
+        //HR用户判断
+        Map<String, Object> mpCheck = new HashMap<>();
+        mpCheck.put("id", sHRID);
+        User user = userDao.getDetail(mpCheck);
+        if (ObjectUtils.isEmpty(user)){
+            return new QueryResponse(CompanyCode.HR_NOT_FOUNT,null);
+        }
+        //查询
+        Map<String, Object> mpParam = new HashMap<>();
+        mpParam.put("sHRID",sHRID);
+        Company company = companyDao.getDetail(mpParam);
+        List<Company> arrCompany = Collections.singletonList(company);
+        return new QueryResponse(CommonCode.SUCCESS, new QueryResult(arrCompany, arrCompany.size()));
     }
 }

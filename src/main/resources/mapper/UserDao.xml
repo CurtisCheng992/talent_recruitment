@@ -57,9 +57,10 @@
 		    dUpdateTime
         from
             t_user
-		<where>
+		where
+			1=1
 			<if test="id != null and id != ''">
-				AND id = #{id}
+				and id = #{id}
 			</if>
 			<if test="sUsername !=null and sUsername != ''">
 				and sUsername = #{sUsername}
@@ -73,7 +74,6 @@
 			<if test="sPhone != null and sPhone != ''">
 				and sPhone = #{sPhone}
 			</if>
-		</where>
 	</select>
 
     <!-- 新增一个用户信息 -->
@@ -149,25 +149,62 @@
 	<update id="update">
 		update
 			t_user
-		set
-			sUsername = #{sUsername},
-			sPassword = #{sPassword},
-			sRealName = #{sRealName},
-			sPhone = #{sPhone},
-			sEmail = #{sEmail},
-			iGender = #{iGender},
-			iAge = #{iAge},
-			sAvatar = #{sAvatar},
-			sProvince = #{sProvince},
-			sCity = #{sCity},
-			iGraduationYear = #{iGraduationYear},
-			sMajor = #{sMajor},
-			sEducation = #{sEducation},
-			sSchoolID = #{sSchoolID},
-			sDirection = #{sDirection},
-			sDescription = #{sDescription},
-			iStatus = #{iStatus},
-			dUpdateTime = #{dUpdateTime}
+		<set>
+			<if test="sUsername != null">
+				sUsername = #{sUsername},
+			</if>
+			<if test="sPassword != null">
+				sPassword = #{sPassword},
+			</if>
+			<if test="sRealName != null">
+				sRealName = #{sRealName},
+			</if>
+			<if test="sPhone != null">
+				sPhone = #{sPhone},
+			</if>
+			<if test="sEmail != null">
+				sEmail = #{sEmail},
+			</if>
+			<if test="iGender != null">
+				iGender = #{iGender},
+			</if>
+			<if test="iAge != null">
+				iAge = #{iAge},
+			</if>
+			<if test="sAvatar != null">
+				sAvatar = #{sAvatar},
+			</if>
+			<if test="sProvince != null">
+				sProvince = #{sProvince},
+			</if>
+			<if test="sCity != null">
+				sCity = #{sCity},
+			</if>
+			<if test="iGraduationYear != null">
+				iGraduationYear = #{iGraduationYear},
+			</if>
+			<if test="sMajor != null">
+				sMajor = #{sMajor},
+			</if>
+			<if test="sEducation != null">
+				sEducation = #{sEducation},
+			</if>
+			<if test="sSchoolID != null">
+				sSchoolID = #{sSchoolID},
+			</if>
+			<if test="sDirection != null">
+				sDirection = #{sDirection},
+			</if>
+			<if test="sDescription != null">
+				sDescription = #{sDescription},
+			</if>
+			<if test="iStatus != null">
+				iStatus = #{iStatus},
+			</if>
+			<if test="dUpdateTime != null">
+				dUpdateTime = #{dUpdateTime}
+			</if>
+		</set>
 		where
 			id = #{id}
 	</update>

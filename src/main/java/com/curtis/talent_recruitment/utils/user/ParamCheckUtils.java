@@ -5,10 +5,10 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.regex.Pattern;
 
 /**
- * @author Colin
+ * @author Curtis
  * @version 1.0.0
  * @description 后台参数校验工具类
- * @date 2020/10/29 17:02
+ * @date 2021/3/16 17:02
  */
 public class ParamCheckUtils {
 

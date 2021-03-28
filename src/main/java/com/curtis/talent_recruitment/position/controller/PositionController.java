@@ -23,8 +23,8 @@ public class PositionController implements PositionControllerApi {
 
     @Override
     @GetMapping("getList")
-    public QueryResponse getList() {
-        return positionService.getList();
+    public QueryResponse getList(@RequestParam(required = false) String sHRID) {
+        return positionService.getList(sHRID);
     }
 
     @Override
@@ -49,5 +49,35 @@ public class PositionController implements PositionControllerApi {
     @PutMapping("update/{id}")
     public CommonResponse update(@PathVariable String id, @RequestBody UpdatePosition updatePosition) {
         return positionService.update(id, updatePosition);
+    }
+
+    @Override
+    @GetMapping("getHot")
+    public QueryResponse getHot(@RequestParam(required = false) Integer iLimit) {
+        return positionService.getHot(iLimit);
+    }
+
+    @Override
+    @GetMapping("getNew")
+    public QueryResponse getNew(Integer iLimit) {
+        return positionService.getNew(iLimit);
+    }
+
+    @Override
+    @GetMapping("getSearch")
+    public QueryResponse getSearch(String sPositionName) {
+        return positionService.getSearch(sPositionName);
+    }
+
+    @Override
+    @GetMapping("getCount/hr/{sHRID}")
+    public QueryResponse getCount(@PathVariable String sHRID) {
+        return positionService.getCount(sHRID);
+    }
+
+    @Override
+    @GetMapping("")
+    public QueryResponse getListByCategoryID(String sCategoryID) {
+        return null;
     }
 }

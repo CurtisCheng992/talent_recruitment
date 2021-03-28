@@ -6,7 +6,7 @@
     <!-- 查询所有公司信息 -->
     <select id="getList" resultType="com.curtis.talent_recruitment.company.entity.Company">
         select
-            id, sCompanyName, sCompanyLogo, sDescription, sTelephone, sAddress, dCreateTime, dUpdateTime
+            id, sCompanyName, sCompanyLogo, sCompanyType, sDescription, sTelephone, sAddress, iHot, sIntroduction, sHRID, iStatus, dCreateTime, dUpdateTime
         from
             t_company
     </select>
@@ -14,11 +14,17 @@
     <!-- 根据id查询一个公司信息 -->
     <select id="getDetail" resultType="com.curtis.talent_recruitment.company.entity.Company">
         select
-            id, sCompanyName, sCompanyLogo, sDescription, sTelephone, sAddress, dCreateTime, dUpdateTime
+            id, sCompanyName, sCompanyLogo, sCompanyType, sDescription, sTelephone, sAddress, iHot, sIntroduction, sHRID, iStatus, dCreateTime, dUpdateTime
         from
             t_company
         where
-            id = #{id}
+            1=1
+        <if test="id != null and id != ''">
+            and id = #{id}
+        </if>
+        <if test="sHRID != null and sHRID != ''">
+            and sHRID = #{sHRID}
+        </if>
     </select>
 
     <!-- 新增一个公司信息 -->
@@ -26,11 +32,11 @@
         insert into
             t_company
         (
-            id, sCompanyName, sCompanyLogo, sDescription, sTelephone, sAddress, dCreateTime, dUpdateTime
+            id, sCompanyName, sCompanyLogo, sCompanyType, sDescription, sTelephone, sAddress, iHot, sIntroduction, sHRID, iStatus, dCreateTime, dUpdateTime
         )
         values
         (
-            #{id},#{sCompanyName},#{sCompanyLogo},#{sDescription},#{sTelephone},#{sAddress},#{dCreateTime},#{dUpdateTime}
+            #{id},#{sCompanyName},#{sCompanyLogo},#{sCompanyType},#{sDescription},#{sTelephone},#{sAddress},#{iHot},#{sIntroduction},#{sHRID},#{iStatus},#{dCreateTime},#{dUpdateTime}
         )
     </insert>
 
@@ -57,12 +63,30 @@
         set
             sCompanyName = #{sCompanyName},
             sCompanyLogo = #{sCompanyLogo},
+            sCompanyType = #{sCompanyType},
             sDescription = #{sDescription},
             sTelephone = #{sTelephone},
             sAddress = #{sAddress},
+            iHot = #{iHot},
+            sIntroduction = #{sIntroduction},
+            sHRID = #{sHRID},
+            iStatus = #{iStatus}
             dUpdateTime = #{dUpdateTime}
         where
             id = #{id}
     </update>
+
+    <!--可限制数量查询热门企业-->
+    <select id="getHot" resultType="com.curtis.talent_recruitment.company.entity.Company">
+        select
+            id, sCompanyName, sCompanyLogo, sCompanyType, sDescription, sTelephone, sAddress, iHot, sIntroduction, sHRID, iStatus, dCreateTime, dUpdateTime
+        from
+            t_company
+        order by
+            iHot desc
+        <if test="iLimit != null and iLimit !=''">
+            limit 0,#{iLimit}
+        </if>
+    </select>
 
 </mapper>

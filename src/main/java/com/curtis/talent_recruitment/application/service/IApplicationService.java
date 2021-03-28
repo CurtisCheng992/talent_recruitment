@@ -19,7 +19,7 @@ public interface IApplicationService {
      *
      * @return
      */
-    QueryResponse getList();
+    QueryResponse getList(String sUserID, String sHRID);
 
     /**
      * 根据id查询所有分类
@@ -54,4 +54,53 @@ public interface IApplicationService {
      */
     CommonResponse update(String id, UpdateApplication updateApplication);
 
+    /**
+     * 根据用户id查询一个申请信息
+     *
+     * @param sUserID
+     * @return
+     */
+    QueryResponse getListByUserID(String sUserID);
+
+    /**
+     * 根据用户id查询申请信息记录条数
+     *
+     * @param sUserID
+     * @return
+     */
+    QueryResponse getCountByUserID(String sUserID);
+
+    /**
+     * 判断该用户是否申请过此职位
+     *
+     * @param sPositionID
+     * @param sUserID
+     * @return
+     */
+    QueryResponse getCount(String sPositionID, String sUserID);
+
+    /**
+     * 根据条件删除一条申请
+     *
+     * @param sPositionID
+     * @param sUserID
+     * @return
+     */
+    CommonResponse deleteByCondition(String sPositionID, String sUserID);
+
+    /**
+     * HR根据申请id完成审核
+     *
+     * @param id
+     * @return
+     */
+    CommonResponse verify(String sHRID, String id);
+
+    /**
+     * 根据HRID统计发布的职位数量
+     *
+     * @param sHRID
+     * @return
+     */
+    QueryResponse getCountByHR(String sHRID);
 }

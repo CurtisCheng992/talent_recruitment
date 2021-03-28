@@ -3,6 +3,7 @@ package com.curtis.talent_recruitment.user.service;
 import com.curtis.talent_recruitment.entity.request.auth.LoginUser;
 import com.curtis.talent_recruitment.entity.request.user.AddHR;
 import com.curtis.talent_recruitment.entity.request.user.AddUser;
+import com.curtis.talent_recruitment.entity.request.user.RegisterUser;
 import com.curtis.talent_recruitment.entity.request.user.UpdateUser;
 import com.curtis.talent_recruitment.entity.response.CommonResponse;
 import com.curtis.talent_recruitment.entity.response.QueryResponse;
@@ -73,4 +74,12 @@ public interface IUserService {
      * @return
      */
     CommonResponse sendCode(LoginUser loginUser, int sendType, int codeType);
+
+    /**
+     * 注册用户
+     *
+     * @param registerUser
+     * @return
+     */
+    CommonResponse register(RegisterUser registerUser);
 }

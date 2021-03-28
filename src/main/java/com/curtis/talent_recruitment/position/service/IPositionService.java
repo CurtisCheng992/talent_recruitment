@@ -17,7 +17,7 @@ public interface IPositionService {
      *
      * @return
      */
-    QueryResponse getList();
+    QueryResponse getList(String sHRID);
 
     /**
      * 根据id查询所有分类
@@ -52,4 +52,35 @@ public interface IPositionService {
      */
     CommonResponse update(String id, UpdatePosition updatePosition);
 
+    /**
+     * 查询热门职位
+     *
+     * @param iLimit 查询个数
+     * @return
+     */
+    QueryResponse getHot(Integer iLimit);
+
+    /**
+     * 查询最新职位
+     *
+     * @param iLimit
+     * @return
+     */
+    QueryResponse getNew(Integer iLimit);
+
+    /**
+     * 搜索职位
+     *
+     * @param sPositionName
+     * @return
+     */
+    QueryResponse getSearch(String sPositionName);
+
+    /**
+     * 根据HRID统计发布的职位数量
+     *
+     * @param sHRID
+     * @return
+     */
+    QueryResponse getCount(String sHRID);
 }

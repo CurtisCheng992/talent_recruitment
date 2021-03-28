@@ -47,4 +47,10 @@ public interface CompanyDao {
      */
     int update(Map<String, Object> mpParam);
 
+    /**
+     * 可限制数量查询热门企业
+     *
+     * @param mpParam
+     */
+    List<Company> getHot(Map<String, Object> mpParam);
 }

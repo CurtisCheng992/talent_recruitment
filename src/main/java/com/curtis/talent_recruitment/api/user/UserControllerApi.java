@@ -3,6 +3,7 @@ package com.curtis.talent_recruitment.api.user;
 import com.curtis.talent_recruitment.entity.request.auth.LoginUser;
 import com.curtis.talent_recruitment.entity.request.user.AddHR;
 import com.curtis.talent_recruitment.entity.request.user.AddUser;
+import com.curtis.talent_recruitment.entity.request.user.RegisterUser;
 import com.curtis.talent_recruitment.entity.request.user.UpdateUser;
 import com.curtis.talent_recruitment.entity.response.CommonResponse;
 import com.curtis.talent_recruitment.entity.response.QueryResponse;
@@ -51,5 +52,8 @@ public interface UserControllerApi {
                     paramType = "path", dataType = "int")
     })
     CommonResponse sendCode(int sendType, int codeType, LoginUser loginUser);
+
+    @ApiOperation("用户注册")
+    CommonResponse register(RegisterUser registerUser);
 
 }

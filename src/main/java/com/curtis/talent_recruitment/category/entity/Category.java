@@ -1,6 +1,7 @@
 package com.curtis.talent_recruitment.category.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 /**
@@ -16,9 +17,13 @@ import lombok.*;
 @ToString
 public class Category {
 
+    @JsonProperty("id")
     private String id; //主键UUID
+    @JsonProperty("sCategoryName")
     private String sCategoryName; //分类名称
+    @JsonProperty("sDescription")
     private String sDescription; //分类描述
+    @JsonProperty("sParentID")
     private String sParentID; //父级分类ID
 
 }

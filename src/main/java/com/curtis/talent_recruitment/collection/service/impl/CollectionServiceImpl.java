@@ -47,6 +47,14 @@ public class CollectionServiceImpl implements ICollectionService {
     @Override
     public QueryResponse getList() {
         List<Collection> arrCollection = collectionDao.getList();
+        Map<String, Object> mpGet = new HashMap<>();
+        for (Collection collection : arrCollection) {
+            mpGet.put("id",collection.getSPositionID());
+            Position position = positionDao.getDetail(mpGet);
+            collection.setSPositionName(position.getSPositionName());
+            collection.setSSalary(position.getSSalary());
+            collection.setSWorkCity(position.getSWorkCity());
+        }
         return new QueryResponse(CommonCode.SUCCESS,new QueryResult(arrCollection, arrCollection.size()));
     }
 
@@ -68,6 +76,12 @@ public class CollectionServiceImpl implements ICollectionService {
         if (ObjectUtils.isEmpty(collection)){
             return new QueryResponse(CollectionCode.COLLECTION_NOT_FOUND,null);
         }
+        Map<String, Object> mpGet = new HashMap<>();
+        mpGet.put("id",collection.getSPositionID());
+        Position position = positionDao.getDetail(mpGet);
+        collection.setSPositionName(position.getSPositionName());
+        collection.setSSalary(position.getSSalary());
+        collection.setSWorkCity(position.getSWorkCity());
         List<Collection> arrCollection = new ArrayList<>();
         arrCollection.add(collection);
         return new QueryResponse(CommonCode.SUCCESS, new QueryResult(arrCollection, arrCollection.size()));
@@ -102,6 +116,14 @@ public class CollectionServiceImpl implements ICollectionService {
         Position position = positionDao.getDetail(mpParam);
         if (ObjectUtils.isEmpty(position)){
             return new CommonResponse(CollectionCode.POSITION_NOT_FOUND);
+        }
+        mpParam.clear();
+        //判断该用户是否已经收藏此职位
+        mpParam.put("sPositionID",position.getId());
+        mpParam.put("sUserID",user.getId());
+        Collection collection = collectionDao.getDetail(mpParam);
+        if (!ObjectUtils.isEmpty(collection)){
+            return new CommonResponse(CollectionCode.USER_HAS_BEEN_COLLECT_THIS_POSITION);
         }
         mpParam.clear();
         //添加一个收藏信息
@@ -189,5 +211,125 @@ public class CollectionServiceImpl implements ICollectionService {
             return new CommonResponse(CollectionCode.UPDATE_FAIL);
         }
         return new CommonResponse(CommonCode.SUCCESS);
+    }
+
+    /**
+     * 根据用户id查询一条收藏信息
+     *
+     * @param sUserID
+     * @return
+     */
+    @Override
+    public QueryResponse getListByUserID(String sUserID) {
+        //参数非空判断
+        if (!StringUtils.isNoneBlank(sUserID)){
+            ExceptionThrowUtils.cast(CommonCode.INVALID_PARAM);
+        }
+        //用户判断
+        Map<String, Object> mpCheck = new HashMap<>();
+        mpCheck.put("id",sUserID);
+        User user = userDao.getDetail(mpCheck);
+        if (ObjectUtils.isEmpty(user)){
+            return new QueryResponse(CollectionCode.USER_NOT_FOUND, null);
+        }
+        //查询信息
+        Map<String, Object> mpGet = new HashMap<>();
+        mpGet.put("sUserID",sUserID);
+        List<Collection> arrCollection = collectionDao.getListByUserID(mpGet);
+        for (Collection collection : arrCollection) {
+            mpGet.put("id",collection.getSPositionID());
+            Position position = positionDao.getDetail(mpGet);
+            collection.setSPositionName(position.getSPositionName());
+            collection.setSSalary(position.getSSalary());
+            collection.setSWorkCity(position.getSWorkCity());
+        }
+        return new QueryResponse(CommonCode.SUCCESS, new QueryResult(arrCollection, arrCollection.size()));
+    }
+
+    /**
+     * 根据用户id查询收藏记录条数
+     *
+     * @param sUserID
+     * @return
+     */
+    @Override
+    public QueryResponse getCountByUserID(String sUserID) {
+        //参数非空判断
+        if (!StringUtils.isNoneBlank(sUserID)){
+            ExceptionThrowUtils.cast(CommonCode.INVALID_PARAM);
+        }
+        //用户判断
+        Map<String ,Object> mpCheck = new HashMap<>();
+        mpCheck.put("id",sUserID);
+        User user = userDao.getDetail(mpCheck);
+        if (ObjectUtils.isEmpty(user)){
+            return new QueryResponse(CollectionCode.USER_NOT_FOUND, null);
+        }
+        //根据用户id查找收藏记录条数
+        Map<String, Object> mpGet = new HashMap<>();
+        mpGet.put("sUserID",sUserID);
+        int iCount = collectionDao.getCount(mpGet);
+        List<Integer> arrCount = Collections.singletonList(iCount);
+        return new QueryResponse(CommonCode.SUCCESS, new QueryResult(arrCount, arrCount.size()));
+    }
+
+    @Override
+    public CommonResponse deleteByCondition(String sPositionID, String sUserID) {
+        //参数非空判断
+        if (!StringUtils.isNoneBlank(sPositionID) ||
+            !StringUtils.isNoneBlank(sUserID)){
+            ExceptionThrowUtils.cast(CommonCode.INVALID_PARAM);
+        }
+        //职位判断
+        Map<String, Object> mpCheck = new HashMap<>();
+        mpCheck.put("id",sPositionID);
+        Position position = positionDao.getDetail(mpCheck);
+        if (ObjectUtils.isEmpty(position)){
+            return new CommonResponse(CollectionCode.POSITION_NOT_FOUND);
+        }
+        //用户判断
+        mpCheck.put("id",sUserID);
+        User user = userDao.getDetail(mpCheck);
+        if (ObjectUtils.isEmpty(user)){
+            return new CommonResponse(CollectionCode.USER_NOT_FOUND);
+        }
+        //删除
+        Map<String, Object> mpParam = new HashMap<>();
+        mpParam.put("sPositionID",sPositionID);
+        mpParam.put("sUserID",sUserID);
+        int iResult = collectionDao.deleteByCondition(mpParam);
+        if (iResult <= 0){
+            return new CommonResponse(CollectionCode.DELETE_FAIL);
+        }
+        return new CommonResponse(CommonCode.SUCCESS);
+    }
+
+    @Override
+    public QueryResponse getCount(String sPositionID, String sUserID) {
+        //参数判断
+        if (!StringUtils.isNoneBlank(sPositionID) ||
+            !StringUtils.isNoneBlank(sUserID)){
+            ExceptionThrowUtils.cast(CommonCode.INVALID_PARAM);
+        }
+        //职位判断
+        Map<String, Object> mpCheck = new HashMap<>();
+        mpCheck.put("id",sPositionID);
+        Position position = positionDao.getDetail(mpCheck);
+        if (ObjectUtils.isEmpty(position)){
+            return new QueryResponse(CollectionCode.POSITION_NOT_FOUND, null);
+        }
+        //用户判断
+        mpCheck.put("id",sUserID);
+        User user = userDao.getDetail(mpCheck);
+        if (ObjectUtils.isEmpty(user)){
+            return new QueryResponse(CollectionCode.USER_NOT_FOUND, null);
+        }
+        //判断该用户是否收藏过此职位
+        Map<String, Object> mpParam = new HashMap<>();
+        mpParam.put("sPositionID",sPositionID);
+        mpParam.put("sUserID",sUserID);
+        int iCount = collectionDao.getCount(mpParam);
+        List<Integer> arrCount = Collections.singletonList(iCount);
+        return new QueryResponse(CommonCode.SUCCESS,new QueryResult(arrCount, arrCount.size()));
     }
 }

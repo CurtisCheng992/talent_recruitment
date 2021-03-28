@@ -17,7 +17,7 @@ public interface PositionDao {
     /**
      * 查询所有职位信息
      */
-    List<Position> getList();
+    List<Position> getList(Map<String, Object> mpParam);
 
     /**
      * 根据id查询一个职位信息
@@ -66,4 +66,34 @@ public interface PositionDao {
      */
     int getCount(Map<String, Object> mpParam);
 
+    /**
+     * 查询热门职位
+     *
+     * @param mpParam
+     * @return
+     */
+    List<Position> getHot(Map<String, Object> mpParam);
+
+    /**
+     * 根据公司id查询该公司下总共招聘的职位数
+     *
+     * @param mpGet
+     */
+    Integer getSumByCompanyID(Map<String, Object> mpGet);
+
+    /**
+     * 查询最新职位
+     *
+     * @param mpParam
+     * @return
+     */
+    List<Position> getNew(Map<String, Object> mpParam);
+
+    /**
+     * 搜索职位
+     *
+     * @param mpParam
+     * @return
+     */
+    List<Position> getSearch(Map<String, Object> mpParam);
 }

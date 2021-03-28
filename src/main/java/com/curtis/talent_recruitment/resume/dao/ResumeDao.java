@@ -58,4 +58,12 @@ public interface ResumeDao {
      * @return
      */
     int getCount(Map<String, Object> mpParam);
+
+    /**
+     * 根据用户id查询一个简历信息
+     *
+     * @param mpParam
+     * @return
+     */
+    Resume getByUserID(Map<String, Object> mpParam);
 }

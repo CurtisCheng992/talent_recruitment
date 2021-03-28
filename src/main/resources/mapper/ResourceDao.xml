@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.curtis.talent_recruitment.resource.dao.ResourceDao">
+
+   <!--新增资源-->
+    <insert id="add">
+        insert into
+            t_resource
+        (
+            id,
+            iType,
+            sExt,
+            sName,
+            sLocation,
+            sContentType,
+            dCreateTime,
+            dUpdateTime,
+            sUserID
+        )
+        values
+        (
+            #{id},
+            #{iType},
+            #{sExt},
+            #{sName},
+            #{sLocation},
+            #{sContentType},
+            #{dCreateTime},
+            #{dUpdateTime},
+            #{sUserID}
+        )
+    </insert>
+
+    <!--根据id查询一个文件资源-->
+    <select id="getDetail" resultType="com.curtis.talent_recruitment.resource.entity.Resource">
+        select
+            id, iType, sExt, sName, sLocation, sContentType, dCreateTime, dUpdateTime, sUserID
+        from
+            t_resource
+        where
+            id = #{id}
+    </select>
+
+    <!--根据id删除一个文件资源-->
+    <delete id="delete">
+        delete from
+            t_resource
+        where
+            id = #{id}
+    </delete>
+
+    <!--根据文件存储路径删除文件-->
+    <delete id="deleteByLocation">
+        delete from
+            t_resource
+        where
+            sLocation = #{sLocation}
+    </delete>
+
+</mapper>

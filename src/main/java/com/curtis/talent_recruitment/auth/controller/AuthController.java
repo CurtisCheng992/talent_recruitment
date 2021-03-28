@@ -93,7 +93,7 @@ public class AuthController implements AuthControllerApi {
         }
         try {
             UserInfo userInfo = JwtUtils.getInfoFromToken( token, config.getPublicKey() );
-            if (userInfo.getStatus()==0) {
+            if (userInfo.getIStatus()==0) {
                 return new CommonResponse( AuthCode.INVALID_USER );
             }
         } catch (Exception e) {
@@ -131,12 +131,14 @@ public class AuthController implements AuthControllerApi {
             token = JwtUtils.generateToken( userInfo, config.getPrivateKey(), config.getExpire() );
             // 更新 cookie 中的 token
             CookieUtils.setCookie( request, response, cookieName, token,
-                    userInfo.getRememberMe() ? 14 * config.getCookieMaxAge() : config.getCookieMaxAge(),
+                    userInfo.getBRememberMe() ? 14 * config.getCookieMaxAge() : config.getCookieMaxAge(),
                     null, true );
 
             return new QueryResponse( AuthCode.VERIFY_SUCCESS,
                     new QueryResult<>( Collections.singletonList( userInfo ), 1 ) );
-        } catch (Exception e) {
+        }catch (IllegalArgumentException iae){
+            System.out.println("JWT String argument cannot be null or empty.");
+        }catch (Exception e) {
             LOGGER.error( "获取token中的用户信息异常！异常原因：{}", e );
         }
         return new CommonResponse( CommonCode.SERVER_ERROR );

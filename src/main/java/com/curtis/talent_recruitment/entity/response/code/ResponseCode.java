@@ -17,6 +17,7 @@ package com.curtis.talent_recruitment.entity.response.code;
  * 学校School: 11001
  * 认证Auth: 12001
  * 申请Application: 13001
+ * 资源Resource: 14001
  *
  * @date 2021/2/23 10:20
  */

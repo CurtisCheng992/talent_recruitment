@@ -6,15 +6,22 @@
     <!-- 查询所有职位信息 -->
     <select id="getList" resultType="com.curtis.talent_recruitment.position.entity.Position">
         select
-            id, sPositionName, sRequirement, iQuantity, sWorkCity, sSalary, sWelfare, sCategoryID, sDepartmentID, iViews, dCreateTime, dUpdateTime
+            id, sPositionName, sRequirement, iQuantity, sWorkCity, sSalary, sWelfare, sCategoryID, sDepartmentID, sCompanyID, sHRID, iViews, dCreateTime, dUpdateTime, iHot, sEducation
         from
             t_position
+        where
+            1=1
+        <if test="sHRID != null and sHRID !=''">
+            and sHRID = #{sHRID}
+        </if>
+        order by
+            dCreateTime desc
     </select>
 
     <!-- 根据id查询一个职位信息 -->
     <select id="getDetail" resultType="com.curtis.talent_recruitment.position.entity.Position">
         select
-            id, sPositionName, sRequirement, iQuantity, sWorkCity, sSalary, sWelfare, sCategoryID, sDepartmentID, iViews, dCreateTime, dUpdateTime
+            id, sPositionName, sRequirement, iQuantity, sWorkCity, sSalary, sWelfare, sCategoryID, sDepartmentID, sCompanyID, sHRID, iViews, dCreateTime, dUpdateTime, iHot, sEducation
         from
             t_position
         where
@@ -26,11 +33,11 @@
         insert into
             t_position
         (
-            id, sPositionName, sRequirement, iQuantity, sWorkCity, sSalary, sWelfare, sCategoryID, sDepartmentID, iViews, dCreateTime, dUpdateTime
+            id, sPositionName, sRequirement, iQuantity, sWorkCity, sSalary, sWelfare, sCategoryID, sDepartmentID, sCompanyID, sHRID, iViews, dCreateTime, dUpdateTime, iHot, sEducation
         )
         values
         (
-            #{id},#{sPositionName},#{sRequirement},#{iQuantity},#{sWorkCity},#{sSalary},#{sWelfare},#{sCategoryID},#{sDepartmentID},#{iViews},#{dCreateTime},#{dUpdateTime}
+            #{id},#{sPositionName},#{sRequirement},#{iQuantity},#{sWorkCity},#{sSalary},#{sWelfare},#{sCategoryID},#{sDepartmentID},#{sCompanyID},#{sHRID},#{iViews},#{dCreateTime},#{dUpdateTime}, #{iHot}, #{sEducation}
         )
     </insert>
 
@@ -55,7 +62,11 @@
             sWelfare = #{sWelfare},
             sCategoryID = #{sCategoryID},
             sDepartmentID = #{sDepartmentID},
+            sCompanyID = #{sCompanyID},
+            sHRID = #{sHRID},
             iViews = #{iViews},
+            iHot = #{iHot},
+            sEducation = #{sEducation},
             dUpdateTime = #{dUpdateTime}
         where
             id = #{id}
@@ -88,6 +99,63 @@
         <if test="sDepartmentID != null and sDepartmentID !=''">
             and sDepartmentID = #{sDepartmentID}
         </if>
+        <if test="sCompanyID != null and sCompanyID !=''">
+            and sCompanyID = #{sCompanyID}
+        </if>
+        <if test="sHRID != null and sHRID !=''">
+            and sHRID = #{sHRID}
+        </if>
+    </select>
+
+    <!--查询热门职位-->
+    <select id="getHot" resultType="com.curtis.talent_recruitment.position.entity.Position">
+        select
+            id, sPositionName, sRequirement, iQuantity, sWorkCity, sSalary, sWelfare, sCategoryID, sDepartmentID, sCompanyID, sHRID, iViews, dCreateTime, dUpdateTime, iHot, sEducation
+        from
+            t_position
+        order by
+            iHot desc
+        <if test="iLimit != null">
+            limit 0,#{iLimit}
+        </if>
+    </select>
+
+    <!--根据公司id查询该公司下总共招聘的职位数-->
+    <select id="getSumByCompanyID" resultType="Integer">
+        select
+	        if(sum(iQuantity) is null, 0, sum(iQuantity)) as sumQuantity
+        from
+	        t_position
+        where
+	        sCompanyID = #{sCompanyID}
+    </select>
+
+    <!--查询最新职位-->
+    <select id="getNew" resultType="com.curtis.talent_recruitment.position.entity.Position">
+        select
+            id, sPositionName, sRequirement, iQuantity, sWorkCity, sSalary, sWelfare, sCategoryID, sDepartmentID, sCompanyID, sHRID, iViews, dCreateTime, dUpdateTime, iHot, sEducation
+        from
+            t_position
+        order by
+            dCreateTime desc
+        <if test="iLimit != null">
+            limit 0,#{iLimit}
+        </if>
+    </select>
+
+    <!--搜索职位-->
+    <select id="getSearch" resultType="com.curtis.talent_recruitment.position.entity.Position">
+        select
+            id, sPositionName, sRequirement, iQuantity, sWorkCity, sSalary, sWelfare, sCategoryID, sDepartmentID, sCompanyID, sHRID, iViews, dCreateTime, dUpdateTime, iHot, sEducation
+        from
+            t_position
+        where
+            1=1
+        <if test="sPositionName !=null and sPositionName != ''">
+            and sPositionName like concat('%', #{sPositionName}, '%')
+        </if>
+        order by
+            iHot desc
     </select>
 
 </mapper>

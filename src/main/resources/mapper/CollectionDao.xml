@@ -18,7 +18,16 @@
         from
             t_collection
         where
-            id = #{id}
+            1=1
+        <if test="id != null and id !=''">
+            and id = #{id}
+        </if>
+        <if test="sPositionID != null and sPositionID !=''">
+            and sPositionID = #{sPositionID}
+        </if>
+        <if test="sUserID != null and sUserID !=''">
+            and sUserID = #{sUserID}
+        </if>
     </select>
 
     <!-- 新增一个收藏信息 -->
@@ -69,5 +78,25 @@
             and sUserID = #{sUserID}
         </if>
     </select>
+
+    <!--根据用户id查询收藏信息-->
+    <select id="getListByUserID" resultType="com.curtis.talent_recruitment.collection.entity.Collection">
+        select
+            id, sUserID, sPositionID, dCreateTIme, dUpdateTime
+        from
+            t_collection
+        where
+            sUserID = #{sUserID}
+    </select>
+
+    <!--根据条件删除一条收藏-->
+    <delete id="deleteByCondition">
+        delete from
+            t_collection
+        where
+            sPositionID = #{sPositionID}
+        and
+            sUserID = #{sUserID}
+    </delete>
 
 </mapper>

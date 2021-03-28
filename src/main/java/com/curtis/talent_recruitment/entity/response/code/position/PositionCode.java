@@ -19,7 +19,10 @@ public enum  PositionCode implements ResponseCode {
     QUANTITY_CANT_LESS_THAN_1( false, 60008, "招聘人数不能小于1！" ),
     DELETE_FAIL_COMMENT_EXIST( false, 60009, "删除失败，请先删除该职位下的评论！" ),
     DELETE_FAIL_APPLICATION_EXIST( false, 60010, "删除失败，请先删除该职位下的申请！" ),
-    DELETE_FAIL_COLLECTION_EXIST( false, 60011, "删除失败，请先删除该职位下的收藏！" );
+    DELETE_FAIL_COLLECTION_EXIST( false, 60011, "删除失败，请先删除该职位下的收藏！" ),
+    COMPANY_NOT_FOUND( false, 60012, "找不到公司！" ),
+    HR_NOT_FOUND( false, 60013, "找不到HR用户！" ),
+    USER_IS_NOT_HR( false, 60014, "该用户不是HR！" );
 
     PositionCode(boolean success, int code, String message) {
         this.success = success;

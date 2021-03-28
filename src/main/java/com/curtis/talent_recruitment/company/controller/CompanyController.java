@@ -50,4 +50,16 @@ public class CompanyController implements CompanyControllerApi {
     public CommonResponse update(@PathVariable String id, @RequestBody UpdateCompany updateCompany) {
         return companyService.update(id,updateCompany);
     }
+
+    @Override
+    @GetMapping("getHot")
+    public QueryResponse getHot(@RequestParam(required = false) Integer iLimit) {
+        return companyService.getHot(iLimit);
+    }
+
+    @Override
+    @GetMapping("getDetail/hr/{sHRID}")
+    public QueryResponse getDetailByHRID(@PathVariable String sHRID) {
+        return companyService.getDetailByHRID(sHRID);
+    }
 }

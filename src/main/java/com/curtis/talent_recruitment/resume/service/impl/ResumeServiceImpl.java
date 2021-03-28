@@ -46,6 +46,21 @@ public class ResumeServiceImpl implements IResumeService {
     @Override
     public QueryResponse getList() {
         List<Resume> arrResume = resumeDao.getList();
+        Map<String, Object> mpGet = new HashMap<>();
+        for (Resume resume : arrResume) {
+            mpGet.put("id",resume.getSUserID());
+            User user = userDao.getDetail(mpGet);
+            resume.setSRealName(user.getSRealName());
+            resume.setSPhone(user.getSPhone());
+            resume.setSEmail(user.getSEmail());
+            resume.setIGender(user.getIGender());
+            resume.setIAge(user.getIAge());
+            resume.setSProvince(user.getSProvince());
+            resume.setSCity(user.getSCity());
+            resume.setIGraduationYear(user.getIGraduationYear());
+            resume.setSMajor(user.getSMajor());
+            resume.setSEducation(user.getSEducation());
+        }
         return new QueryResponse(CommonCode.SUCCESS, new QueryResult(arrResume,arrResume.size()));
     }
 
@@ -67,6 +82,19 @@ public class ResumeServiceImpl implements IResumeService {
         if (ObjectUtils.isEmpty(resume)){
             return new QueryResponse(ResumeCode.RESUME_NOT_FOUND,null);
         }
+        Map<String, Object> mpGet = new HashMap<>();
+        mpGet.put("id",resume.getSUserID());
+        User user = userDao.getDetail(mpGet);
+        resume.setSRealName(user.getSRealName());
+        resume.setSPhone(user.getSPhone());
+        resume.setSEmail(user.getSEmail());
+        resume.setIGender(user.getIGender());
+        resume.setIAge(user.getIAge());
+        resume.setSProvince(user.getSProvince());
+        resume.setSCity(user.getSCity());
+        resume.setIGraduationYear(user.getIGraduationYear());
+        resume.setSMajor(user.getSMajor());
+        resume.setSEducation(user.getSEducation());
         List<Resume> arrResume = new ArrayList<>();
         arrResume.add(resume);
         return new QueryResponse(CommonCode.SUCCESS, new QueryResult(arrResume, arrResume.size()));
@@ -178,5 +206,46 @@ public class ResumeServiceImpl implements IResumeService {
             return new CommonResponse(ResumeCode.UPDATE_FAIL);
         }
         return new CommonResponse(CommonCode.SUCCESS);
+    }
+
+    /**
+     * 根据用户id查询一个简历信息
+     *
+     * @param sUserID
+     * @return
+     */
+    @Override
+    public QueryResponse getByUserID(String sUserID) {
+        //参数非空判断
+        if (!StringUtils.isNoneBlank(sUserID)){
+            ExceptionThrowUtils.cast(CommonCode.INVALID_PARAM);
+        }
+        //判断该用户id是否合法
+        Map<String, Object> mpCheck = new HashMap<>();
+        mpCheck.put("id",sUserID);
+        User user = userDao.getDetail(mpCheck);
+        if (ObjectUtils.isEmpty(user)){
+            return new QueryResponse(ResumeCode.USER_NOT_FOUND,null);
+        }
+        //查询简历信息
+        Map<String, Object> mpGet = new HashMap<>();
+        mpGet.put("sUserID",sUserID);
+        Resume resume = resumeDao.getByUserID(mpGet);
+        if (ObjectUtils.isEmpty(resume)){
+            return new QueryResponse(ResumeCode.RESUME_NOT_FOUND, null);
+        }
+        mpGet.put("id",resume.getSUserID());
+        resume.setSRealName(user.getSRealName());
+        resume.setSPhone(user.getSPhone());
+        resume.setSEmail(user.getSEmail());
+        resume.setIGender(user.getIGender());
+        resume.setIAge(user.getIAge());
+        resume.setSProvince(user.getSProvince());
+        resume.setSCity(user.getSCity());
+        resume.setIGraduationYear(user.getIGraduationYear());
+        resume.setSMajor(user.getSMajor());
+        resume.setSEducation(user.getSEducation());
+        List<Resume> arrResume = Collections.singletonList(resume);
+        return new QueryResponse(CommonCode.SUCCESS, new QueryResult(arrResume, arrResume.size()));
     }
 }

@@ -6,15 +6,23 @@
     <!-- 查询所有申请信息 -->
     <select id="getList" resultType="com.curtis.talent_recruitment.application.entity.Application">
         select
-            id, sResumeID, sPositionID, sHRID, iStatus, dCreateTime, dUpdateTime
+            id, sResumeID, sPositionID, sUserID, sHRID, iStatus, dCreateTime, dUpdateTime
         from
             t_application
+        where
+            1=1
+        <if test="sUserID != null and sUserID != ''">
+            and sUserID = #{sUserID}
+        </if>
+        <if test="sHRID != null and sHRID != ''">
+            and sHRID = #{sHRID}
+        </if>
     </select>
 
     <!-- 根据id查询一个申请信息 -->
     <select id="getDetail" resultType="com.curtis.talent_recruitment.application.entity.Application">
         select
-            id, sResumeID, sPositionID, sHRID, iStatus, dCreateTime, dUpdateTime
+            id, sResumeID, sPositionID, sUserID, sHRID, iStatus, dCreateTime, dUpdateTime
         from
             t_application
         where
@@ -26,11 +34,11 @@
         insert into
             t_application
         (
-            id, sResumeID, sPositionID, sHRID, iStatus, dCreateTime, dUpdateTime
+            id, sResumeID, sPositionID, sUserID, sHRID, iStatus, dCreateTime, dUpdateTime
         )
         values
         (
-            #{id},#{sResumeID},#{sPositionID},#{sHRID}, #{iStatus}, #{dCreateTime}, #{dUpdateTime}
+            #{id},#{sResumeID},#{sPositionID},#{sUserID},#{sHRID}, #{iStatus}, #{dCreateTime}, #{dUpdateTime}
         )
     </insert>
 
@@ -49,6 +57,7 @@
         set
             sResumeID = #{sResumeID},
             sPositionID = #{sPositionID},
+            sUserID = #{sUserID},
             sHRID = #{sHRID},
             iStatus = #{iStatus},
             dUpdateTime = #{dUpdateTime}
@@ -70,9 +79,48 @@
         <if test="sResumeID != null and sResumeID != ''">
             and sResumeID = #{sResumeID}
         </if>
+        <if test="sUserID != null and sUserID != ''">
+            and sUserID = #{sUserID}
+        </if>
         <if test="sHRID != null and sHRID != ''">
             and sHRID = #{sHRID}
         </if>
     </select>
+
+    <!--根据用户id查询所有申请信息-->
+    <select id="getListByUserID" resultType="com.curtis.talent_recruitment.application.entity.Application">
+        select
+            id, sResumeID, sPositionID, sUserID, sHRID, iStatus, dCreateTime, dUpdateTime
+        from
+            t_application
+        where
+            1 =1
+        <if test="sUserID != null and sUserID != ''">
+            and sUserID = #{sUserID}
+        </if>
+        <if test="sHRID != null and sHRID != ''">
+            and sHRID = #{sHRID}
+        </if>
+    </select>
+
+    <!--根据条件删除申请-->
+    <delete id="deleteByCondition">
+        delete from
+            t_application
+        where
+            sPositionID = #{sPositionID}
+        and
+            sUserID = #{sUserID}
+    </delete>
+
+    <!--HR审核申请-->
+    <update id="verify">
+        update
+            t_application
+        set
+            iStatus = 1
+        where
+            id = #{id}
+    </update>
 
 </mapper>

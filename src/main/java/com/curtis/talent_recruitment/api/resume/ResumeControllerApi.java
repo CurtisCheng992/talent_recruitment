@@ -38,5 +38,9 @@ public interface ResumeControllerApi {
     @ApiImplicitParam(name = "id", value = "简历主键id", required = true,
             paramType = "path", dataType = "String")
     CommonResponse update(String id, UpdateResume updateResume);
-    
+
+    @ApiOperation("根据用户id查找一个简历信息")
+    @ApiImplicitParam(name = "sUserID", value = "用户id", required = true,
+            paramType = "path", dataType = "String")
+    QueryResponse getByUserID(String sUserID);
 }

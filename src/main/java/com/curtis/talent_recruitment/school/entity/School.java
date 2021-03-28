@@ -1,6 +1,7 @@
 package com.curtis.talent_recruitment.school.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 /**
@@ -17,6 +18,7 @@ import lombok.*;
 public class School {
 
     private String id;
+    @JsonProperty("sSchoolName")
     private String sSchoolName;
 
 }

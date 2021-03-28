@@ -1,6 +1,7 @@
 package com.curtis.talent_recruitment.collection.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import java.util.Date;
@@ -18,10 +19,21 @@ import java.util.Date;
 @ToString
 public class Collection {
 
+    @JsonProperty("id")
     private String id; //主键UUID
+    @JsonProperty("sUserID")
     private String sUserID; //用户id
+    @JsonProperty("sPositionID")
     private String sPositionID; //职位id
+    @JsonProperty("sPositionName")
+    private String sPositionName; //职位名称
+    @JsonProperty("sSalary")
+    private String sSalary; //薪资
+    @JsonProperty("sWorkCity")
+    private String sWorkCity; //工作城市
+    @JsonProperty("dCreateTime")
     private Date dCreateTime; //创建时间
+    @JsonProperty("dUpdateTime")
     private Date dUpdateTime; //更新时间
 
 }

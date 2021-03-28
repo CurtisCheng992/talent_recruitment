@@ -15,7 +15,8 @@ public enum  CollectionCode implements ResponseCode {
     UPDATE_FAIL( false, 80004, "更新收藏信息失败！" ),
     INVALID_PARAM( false, 80005, "部分参数不能为空！" ),
     USER_NOT_FOUND( false, 80006, "找不到用户信息！" ),
-    POSITION_NOT_FOUND( false, 80007, "找不到职位信息！" );
+    POSITION_NOT_FOUND( false, 80007, "找不到职位信息！" ),
+    USER_HAS_BEEN_COLLECT_THIS_POSITION( false, 80008, "该用户已经收藏过此职位了！" );
 
     CollectionCode(boolean success, int code, String message) {
         this.success = success;
