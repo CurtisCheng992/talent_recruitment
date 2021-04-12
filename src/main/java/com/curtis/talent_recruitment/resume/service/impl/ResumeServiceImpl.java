@@ -14,7 +14,9 @@ import com.curtis.talent_recruitment.resume.service.IResumeService;
 import com.curtis.talent_recruitment.user.dao.UserDao;
 import com.curtis.talent_recruitment.user.entity.User;
 import com.curtis.talent_recruitment.utils.exception.ExceptionThrowUtils;
+import com.github.pagehelper.PageInfo;
 import com.hs.commons.utils.ConvertUtils;
+import com.hs.commons.utils.PageUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +47,8 @@ public class ResumeServiceImpl implements IResumeService {
      */
     @Override
     public QueryResponse getList() {
-        List<Resume> arrResume = resumeDao.getList();
+        Map<String, Object> mpParam = new HashMap<>();
+        List<Resume> arrResume = resumeDao.getList(mpParam);
         Map<String, Object> mpGet = new HashMap<>();
         for (Resume resume : arrResume) {
             mpGet.put("id",resume.getSUserID());
@@ -149,6 +152,7 @@ public class ResumeServiceImpl implements IResumeService {
         }
         //判断该简历下是否存在申请
         Map<String, Object> mpCheck = new HashMap<>();
+        mpCheck.put("sResumeID",id);
         int iCount = applicationDao.getCount(mpCheck);
         if (iCount >= 1){
             return new CommonResponse(ResumeCode.DELETE_FAIL_APPLICATION_EXIST);
@@ -247,5 +251,79 @@ public class ResumeServiceImpl implements IResumeService {
         resume.setSEducation(user.getSEducation());
         List<Resume> arrResume = Collections.singletonList(resume);
         return new QueryResponse(CommonCode.SUCCESS, new QueryResult(arrResume, arrResume.size()));
+    }
+
+    @Override
+    public CommonResponse updatePicture(String id, String sPicture) {
+        //参数非空判断
+        if (StringUtils.isBlank(sPicture)){
+            ExceptionThrowUtils.cast(CommonCode.INVALID_PARAM);
+        }
+        sPicture = sPicture.split("\"")[3];
+        //判断简历
+        Map<String, Object> mpParam = new HashMap<>();
+        mpParam.put("id",id);
+        Resume resume = resumeDao.getDetail(mpParam);
+        if (ObjectUtils.isEmpty(resume)){
+            return new CommonResponse(ResumeCode.RESUME_NOT_FOUND);
+        }
+        //更新人脸图片
+        mpParam.clear();
+        mpParam.put("sPicture",sPicture);
+        mpParam.put("id",id);
+        int iCount = resumeDao.updatePicture(mpParam);
+        if (iCount <= 0){
+            return new CommonResponse(ResumeCode.UPDATE_FAIL);
+        }
+        return new CommonResponse(CommonCode.SUCCESS);
+    }
+
+    @Override
+    public QueryResponse getByPage(Long lCurrentPage, Long lPageSize, Map<String, Object> mpParam) {
+        mpParam.put("pageNumber", lCurrentPage);
+        mpParam.put("pageSize", lPageSize);
+        //分页
+        PageUtils.initPaging(mpParam);
+        //查询列表
+        List<Resume> arrResume = resumeDao.getList(mpParam);
+        Map<String, Object> mpGet = new HashMap<>();
+        for (Resume resume : arrResume) {
+            mpGet.put("id",resume.getSUserID());
+            User user = userDao.getDetail(mpGet);
+            resume.setSRealName(user.getSRealName());
+            resume.setSPhone(user.getSPhone());
+            resume.setSEmail(user.getSEmail());
+            resume.setIGender(user.getIGender());
+            resume.setIAge(user.getIAge());
+            resume.setSProvince(user.getSProvince());
+            resume.setSCity(user.getSCity());
+            resume.setIGraduationYear(user.getIGraduationYear());
+            resume.setSMajor(user.getSMajor());
+            resume.setSEducation(user.getSEducation());
+        }
+        //分页
+        PageInfo<Resume> page = new PageInfo<>(arrResume);
+        List<PageInfo<Resume>> arrPage = Collections.singletonList(page);
+        return new QueryResponse(CommonCode.SUCCESS, new QueryResult(arrPage, arrPage.size()));
+    }
+
+    @Override
+    public QueryResponse getCount(String sUserID) {
+        //参数判断
+        if (StringUtils.isBlank(sUserID)){
+            ExceptionThrowUtils.cast(CommonCode.SUCCESS);
+        }
+        //用户判断
+        Map<String, Object> mpParam = new HashMap<>();
+        mpParam.put("id",sUserID);
+        User user = userDao.getDetail(mpParam);
+        if (ObjectUtils.isEmpty(user)){
+            return new QueryResponse(ResumeCode.USER_NOT_FOUND, null);
+        }
+        //查询统计
+        mpParam.put("sUserID",sUserID);
+        int iCount = resumeDao.getCount(mpParam);
+        List<Integer> arrCount = Collections.singletonList(iCount);
+        return new QueryResponse(CommonCode.SUCCESS, new QueryResult(arrCount, arrCount.size()));
     }
 }

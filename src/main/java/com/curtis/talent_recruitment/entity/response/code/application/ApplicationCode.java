@@ -20,7 +20,8 @@ public enum ApplicationCode implements ResponseCode {
     USER_NOT_FOUND( false, 13009, "找不到该申请用户！" ),
     NOT_THE_HR_OF_APPLICATION( false, 13010, "该用户不是该申请的HR" ),
     VERIFY_FAIL( false, 13011, "申请审核失败！" ),
-    USER_IS_NOT_HR( false, 13012, "该用户不是HR!" );
+    USER_IS_NOT_HR( false, 13012, "该用户不是HR!" ),
+    APPLICATION_FAIL_RESUME_NOT_EXIST( false, 13013, "申请失败，请先完善简历！" );
 
     private boolean success;
     private int code;

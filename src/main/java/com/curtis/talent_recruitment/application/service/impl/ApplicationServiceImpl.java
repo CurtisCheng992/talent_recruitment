@@ -21,7 +21,9 @@ import com.curtis.talent_recruitment.school.entity.School;
 import com.curtis.talent_recruitment.user.dao.UserDao;
 import com.curtis.talent_recruitment.user.entity.User;
 import com.curtis.talent_recruitment.utils.exception.ExceptionThrowUtils;
+import com.github.pagehelper.PageInfo;
 import com.hs.commons.utils.ConvertUtils;
+import com.hs.commons.utils.PageUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -161,21 +163,15 @@ public class ApplicationServiceImpl implements IApplicationService {
         if (ObjectUtils.isEmpty(addApplication)){
             ExceptionThrowUtils.cast(CommonCode.INVALID_PARAM);
         }
-        //参数sResumeID,sPositionID,sHRID, iStatus非空判断
+        //参数sUserID,sPositionID,sHRID, iStatus非空判断
         if (
-            !StringUtils.isNoneBlank(addApplication.getSResumeID()) ||
+            !StringUtils.isNoneBlank(addApplication.getSUserID()) ||
             !StringUtils.isNoneBlank(addApplication.getSPositionID()) ||
             !StringUtils.isNoneBlank(addApplication.getSHRID()) ||
             addApplication.getIStatus() == null ||
             (addApplication.getIStatus() !=0 && addApplication.getIStatus()!=1)
         ){
             ExceptionThrowUtils.cast(ApplicationCode.INVALID_PARAM);
-        }
-        //根据sResumeID判断该简历是否存在
-        mpParam.put("id",addApplication.getSResumeID());
-        Resume resume = resumeDao.getDetail(mpParam);
-        if (ObjectUtils.isEmpty(resume)){
-            return new CommonResponse(ApplicationCode.RESUME_NOT_FOUND);
         }
         mpParam.clear();
         //根据sPositionID判断该职位是否存在
@@ -187,17 +183,37 @@ public class ApplicationServiceImpl implements IApplicationService {
         mpParam.clear();
         //根据sHRID判断该HR用户是否存在
         mpParam.put("id",addApplication.getSHRID());
+        User HR = userDao.getDetail(mpParam);
+        if (ObjectUtils.isEmpty(HR)){
+            return new CommonResponse(ApplicationCode.HR_NOT_FOUND);
+        }
+        mpParam.clear();
+        //根据sUserID判断用户是否存在
+        mpParam.put("id",addApplication.getSUserID());
         User user = userDao.getDetail(mpParam);
         if (ObjectUtils.isEmpty(user)){
-            return new CommonResponse(ApplicationCode.HR_NOT_FOUND);
+            return new CommonResponse(ApplicationCode.USER_NOT_FOUND);
+        }
+        mpParam.clear();
+        //根据用户id查询一个简历谢谢你
+        mpParam.put("sUserID",user.getId());
+        Resume resume = resumeDao.getByUserID(mpParam);
+        if (ObjectUtils.isEmpty(resume)){
+            return new CommonResponse(ApplicationCode.APPLICATION_FAIL_RESUME_NOT_EXIST);
         }
         mpParam.clear();
         //添加一个申请信息
         mpParam = ConvertUtils.objectToMap(addApplication);
+        mpParam.put("sResumeID", resume.getId());
         mpParam.put("id", com.hs.commons.utils.StringUtils.getUUIDString());
         mpParam.put("dCreateTime", new Date());
         mpParam.put("dUpdateTime", new Date());
         int iResult = applicationDao.add(mpParam);
+        //更新该职位的热门值 ， 申请+5
+        Map<String, Object> mpHot = new HashMap<>();
+        mpHot.put("sPositionID",addApplication.getSPositionID());
+        mpHot.put("iHot",5);
+        positionDao.updatePositionHot(mpHot);
         if (iResult <= 0){
             return new CommonResponse(ApplicationCode.INSERT_FAIL);
         }
@@ -488,5 +504,88 @@ public class ApplicationServiceImpl implements IApplicationService {
         int iCount = applicationDao.getCount(mpParam);
         List<Integer> arrCount = Collections.singletonList(iCount);
         return new QueryResponse(CommonCode.SUCCESS, new QueryResult(arrCount, arrCount.size()));
+    }
+
+    @Override
+    public QueryResponse getByPage(Long lCurrentPage, Long lPageSize, Map<String, Object> mpParam) {
+        mpParam.put("pageNumber", lCurrentPage);
+        mpParam.put("pageSize", lPageSize);
+        //分页
+        PageUtils.initPaging(mpParam);
+        //查询列表
+        String sUserID = (String) mpParam.get("sUserID");
+        String sHRID = (String) mpParam.get("sHRID");
+        Map<String, Object> mpGet = new HashMap<>();
+        List<Application> arrApplication = null;
+        if (StringUtils.isNoneBlank(sUserID)){
+            mpGet.put("id",sUserID);
+            User user = userDao.getDetail(mpGet);
+            arrApplication = applicationDao.getListByUserID(mpParam);
+            mpGet.clear();
+            for (Application application : arrApplication) {
+                mpGet.clear();
+                mpGet.put("id",application.getSPositionID());
+                Position position = positionDao.getDetail(mpGet);
+                application.setSPositionName(position.getSPositionName());
+                application.setSSalary(position.getSSalary());
+                application.setSWorkCity(position.getSWorkCity());
+                mpGet.put("id",application.getSHRID());
+                User HR = userDao.getDetail(mpGet);
+                application.setSHRName(HR.getSRealName());
+                application.setSHREmail(HR.getSEmail());
+                mpGet.put("id",position.getSCompanyID());
+                Company company = companyDao.getDetail(mpGet);
+                application.setSCompanyName(company.getSCompanyName());
+                mpGet.put("id",application.getSUserID());
+                application.setSUserRealName(user.getSRealName());
+                application.setSUserPhone(user.getSPhone());
+                application.setSUserEmail(user.getSEmail());
+                application.setIUserGender(user.getIGender());
+                application.setSUserProvince(user.getSProvince());
+                application.setSUserCity(user.getSCity());
+                application.setIUserGraduationYear(user.getIGraduationYear());
+                application.setSUserEducation(user.getSEducation());
+                mpGet.put("id",user.getSSchoolID());
+                School school = schoolDao.getDetail(mpGet);
+                application.setSUserSchoolName(school.getSSchoolName());
+            }
+        }else{
+//            if ("all".equals(mpParam.get("iUserGender"))){
+//                mpParam.put("iUserGender",null);
+//            }
+            arrApplication = applicationDao.getList(mpParam);
+            for (Application application : arrApplication) {
+                mpGet.put("id",application.getSPositionID());
+                Position position = positionDao.getDetail(mpGet);
+                application.setSPositionName(position.getSPositionName());
+                application.setSSalary(position.getSSalary());
+                application.setSWorkCity(position.getSWorkCity());
+                mpGet.put("id",application.getSHRID());
+                User HR = userDao.getDetail(mpGet);
+                application.setSHRName(HR.getSRealName());
+                application.setSHREmail(HR.getSEmail());
+                mpGet.put("id",position.getSCompanyID());
+                Company company = companyDao.getDetail(mpGet);
+                application.setSCompanyName(company.getSCompanyName());
+                mpGet.put("id",application.getSUserID());
+                User user = userDao.getDetail(mpGet);
+                application.setSUserRealName(user.getSRealName());
+                application.setSUserPhone(user.getSPhone());
+                application.setSUserEmail(user.getSEmail());
+                application.setIUserGender(user.getIGender());
+                application.setSUserProvince(user.getSProvince());
+                application.setSUserCity(user.getSCity());
+                application.setIUserGraduationYear(user.getIGraduationYear());
+                application.setSUserEducation(user.getSEducation());
+                mpGet.put("id",user.getSSchoolID());
+                School school = schoolDao.getDetail(mpGet);
+                application.setSUserSchoolName(school.getSSchoolName());
+            }
+        }
+
+        //分页
+        PageInfo<Application> page = new PageInfo<>(arrApplication);
+        List<PageInfo<Application>> arrPage = Collections.singletonList(page);
+        return new QueryResponse(CommonCode.SUCCESS, new QueryResult(arrPage, arrPage.size()));
     }
 }

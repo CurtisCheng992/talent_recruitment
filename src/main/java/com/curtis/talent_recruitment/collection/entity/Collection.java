@@ -35,5 +35,14 @@ public class Collection {
     private Date dCreateTime; //创建时间
     @JsonProperty("dUpdateTime")
     private Date dUpdateTime; //更新时间
+    @JsonProperty("iQuantity")
+    private Integer iQuantity; //招聘人数
+    @JsonProperty("sCompanyName")
+    private String sCompanyName;
+    @JsonProperty("sRequirement")
+    private String sRequirement;
+    @JsonProperty("sUsername")
+    private String sUsername;
+
 
 }

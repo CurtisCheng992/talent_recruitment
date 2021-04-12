@@ -10,6 +10,7 @@
         (
             id,
             iType,
+            sSize,
             sExt,
             sName,
             sLocation,
@@ -22,6 +23,7 @@
         (
             #{id},
             #{iType},
+            #{sSize},
             #{sExt},
             #{sName},
             #{sLocation},
@@ -35,7 +37,7 @@
     <!--根据id查询一个文件资源-->
     <select id="getDetail" resultType="com.curtis.talent_recruitment.resource.entity.Resource">
         select
-            id, iType, sExt, sName, sLocation, sContentType, dCreateTime, dUpdateTime, sUserID
+            id, iType, sSize, sExt, sName, sLocation, sContentType, dCreateTime, dUpdateTime, sUserID
         from
             t_resource
         where
@@ -57,5 +59,25 @@
         where
             sLocation = #{sLocation}
     </delete>
+
+    <!--查询所有资源文件-->
+    <select id="getList" resultType="com.curtis.talent_recruitment.resource.entity.Resource">
+        select
+            id, sUserID, iType, sSize, sExt, sName, sLocation, sContentType, dCreateTime, dUpdateTime
+        from
+            t_resource
+        where
+            1=1
+        <if test="sName != null and sName != ''">
+            and sName = #{sName}
+        </if>
+        <if test="sExt != null and sExt != ''">
+            and sExt = #{sExt}
+        </if>
+        <if test="sUsername != null and sUsername != ''">
+            and sUserID in (select id from t_user where sUsername = #{sUsername})
+        </if>
+        order by dUpdateTime desc
+    </select>
 
 </mapper>

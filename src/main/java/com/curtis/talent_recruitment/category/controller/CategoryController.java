@@ -9,6 +9,8 @@ import com.curtis.talent_recruitment.entity.response.QueryResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 /**
  * @Author: Curtis
  * @Description:
@@ -74,5 +76,17 @@ public class CategoryController implements CategoryControllerApi {
     @PutMapping("update/{id}")
     public CommonResponse update(@PathVariable String id, @RequestBody UpdateCategory updateCategory) {
         return categoryService.update(id,updateCategory);
+    }
+
+    @Override
+    @GetMapping("getByName/{sCategoryName}")
+    public QueryResponse getByName(@PathVariable String sCategoryName) {
+        return categoryService.getByName(sCategoryName);
+    }
+
+    @Override
+    @PostMapping("getByPage/currentPage/pageSize/{lCurrentPage}/{lPageSize}")
+    public QueryResponse getByPage(@PathVariable Long lCurrentPage, @PathVariable Long lPageSize, @RequestBody Map<String, Object> mpParam) {
+        return categoryService.getByPage(lCurrentPage, lPageSize, mpParam);
     }
 }

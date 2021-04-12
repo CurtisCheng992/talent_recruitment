@@ -1,20 +1,25 @@
 package com.curtis.talent_recruitment.user.controller;
 
 import com.curtis.talent_recruitment.api.user.UserControllerApi;
+import com.curtis.talent_recruitment.auth.entity.UserInfo;
 import com.curtis.talent_recruitment.entity.request.auth.LoginUser;
-import com.curtis.talent_recruitment.entity.request.user.AddHR;
-import com.curtis.talent_recruitment.entity.request.user.AddUser;
-import com.curtis.talent_recruitment.entity.request.user.RegisterUser;
-import com.curtis.talent_recruitment.entity.request.user.UpdateUser;
+import com.curtis.talent_recruitment.entity.request.user.*;
 import com.curtis.talent_recruitment.entity.response.CommonResponse;
 import com.curtis.talent_recruitment.entity.response.QueryResponse;
 import com.curtis.talent_recruitment.entity.response.code.CommonCode;
 import com.curtis.talent_recruitment.user.service.IUserService;
+import com.curtis.talent_recruitment.utils.auth.CookieUtils;
+import com.curtis.talent_recruitment.utils.auth.JwtConfig;
+import com.curtis.talent_recruitment.utils.auth.JwtUtils;
 import com.curtis.talent_recruitment.utils.exception.ExceptionThrowUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 /**
  * @Author: Curtis
@@ -30,6 +35,9 @@ public class UserController implements UserControllerApi {
     @Autowired
     private IUserService userService;
 
+    @Autowired
+    private JwtConfig config;
+
     /**
      * 查询所有用户
      *
@@ -37,8 +45,8 @@ public class UserController implements UserControllerApi {
      */
     @Override
     @GetMapping("getList")
-    public QueryResponse getList() {
-        return userService.getList();
+    public QueryResponse getList(@RequestParam Integer iRoleType) {
+        return userService.getList(iRoleType);
     }
 
     /**
@@ -128,6 +136,66 @@ public class UserController implements UserControllerApi {
     @PostMapping("register")
     public CommonResponse register(@RequestBody RegisterUser registerUser) {
         return userService.register( registerUser );
+    }
+
+    @Override
+    @PutMapping("avatar/id/{id}")
+    public CommonResponse updateAvatar(@PathVariable String id, @RequestBody AvatarUser avatarUser, HttpServletRequest request, HttpServletResponse response) {
+        if (checkIdIfInvalid(id,request)){
+            return new CommonResponse(CommonCode.INVALID_PARAM);
+        }
+        return userService.updateAvatar( id, avatarUser.getSAvatar(), request, response );
+    }
+
+    @Override
+    @PutMapping("password/id/{id}")
+    public CommonResponse updatePassword(@PathVariable String id, @RequestBody PasswordUser passwordUser, HttpServletRequest request) {
+        if (checkIdIfInvalid(id,request)){
+            return new CommonResponse(CommonCode.INVALID_PARAM);
+        }
+        return userService.updatePassword(id, passwordUser);
+    }
+
+    @Override
+    @PutMapping("email/id/{id}")
+    public CommonResponse updateEmail(@PathVariable String id, @RequestBody EmailUser emailUser, HttpServletRequest request) {
+        if (checkIdIfInvalid(id,request)){
+            return new CommonResponse(CommonCode.INVALID_PARAM);
+        }
+        return userService.updateEmail(id, emailUser);
+    }
+
+    @Override
+    @PutMapping("phone/id/{id}")
+    public CommonResponse updatePhone(@PathVariable String id, @RequestBody PhoneUser phoneUser, HttpServletRequest request) {
+        if (checkIdIfInvalid(id,request)){
+            return new CommonResponse(CommonCode.INVALID_PARAM);
+        }
+        return userService.updatePhone(id, phoneUser);
+    }
+
+    @Override
+    @GetMapping("email/id/{id}")
+    public QueryResponse getEmailById(@PathVariable String id) {
+        return userService.getEmailById(id);
+    }
+
+    @Override
+    @PostMapping("getByPage/currentPage/pageSize/{lCurrentPage}/{lPageSize}")
+    public QueryResponse getByPage(@PathVariable Long lCurrentPage, @PathVariable Long lPageSize, @RequestBody Map<String, Object> mpParam) {
+        return userService.getByPage(lCurrentPage, lPageSize, mpParam);
+    }
+
+    private boolean checkIdIfInvalid(@PathVariable String id, HttpServletRequest request) {
+        String token = CookieUtils.getCookieValue( request, "37e5efd7f4914c32b8f4721943977f08".equals(id) ? config.getAdminCookieName() : config.getUserCookieName() );
+        UserInfo userInfo;
+        try {
+            userInfo = JwtUtils.getInfoFromToken( token, config.getPublicKey() );
+        } catch (Exception e) {
+            LOGGER.error( "解析 token 信息异常！异常原因：{}", e );
+            return true;
+        }
+        return !id.equals(userInfo.getId());
     }
 
 }

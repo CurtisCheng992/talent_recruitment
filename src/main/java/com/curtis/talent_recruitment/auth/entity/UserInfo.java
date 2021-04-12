@@ -35,4 +35,12 @@ public class UserInfo {
         this.sUsername = sUsername;
     }
 
+    public UserInfo(String id, String sUsername, Boolean isHR, String sAvatar, Boolean bRememberMe, Integer iStatus) {
+        this.id = id;
+        this.sUsername = sUsername;
+        this.isHR = isHR;
+        this.sAvatar = sAvatar;
+        this.bRememberMe = bRememberMe;
+        this.iStatus =iStatus;
+    }
 }

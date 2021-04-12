@@ -9,6 +9,8 @@ import com.curtis.talent_recruitment.entity.response.QueryResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 /**
  * @Author: Curtis
  * @Description:
@@ -85,5 +87,11 @@ public class ApplicationController implements ApplicationControllerApi {
     @GetMapping("getCount/hr/{sHRID}")
     public QueryResponse getCountByHR(@PathVariable String sHRID) {
         return applicationService.getCountByHR(sHRID);
+    }
+
+    @Override
+    @PostMapping("getByPage/currentPage/pageSize/{lCurrentPage}/{lPageSize}")
+    public QueryResponse getByPage(@PathVariable Long lCurrentPage, @PathVariable Long lPageSize, @RequestBody Map<String, Object> mpParam) {
+        return applicationService.getByPage(lCurrentPage, lPageSize, mpParam);
     }
 }

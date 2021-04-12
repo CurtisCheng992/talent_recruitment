@@ -9,6 +9,11 @@
             id, sSchoolName
         from
             t_school
+        where
+            1=1
+        <if test="sSchoolName != null and sSchoolName != ''">
+            and sSchoolName like CONCAT('%', #{sSchoolName}, '%')
+        </if>
     </select>
 
     <!-- 根据id查询一个学校信息 -->
@@ -18,7 +23,13 @@
         from
             t_school
         where
-            id = #{id}
+            1=1
+        <if test="id != null and id != ''">
+            and id = #{id}
+        </if>
+        <if test="sSchoolName != null and sSchoolName != ''">
+            and sSchoolName = #{sSchoolName}
+        </if>
     </select>
 
 </mapper>

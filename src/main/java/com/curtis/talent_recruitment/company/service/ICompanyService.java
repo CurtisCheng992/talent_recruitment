@@ -5,6 +5,8 @@ import com.curtis.talent_recruitment.entity.request.company.UpdateCompany;
 import com.curtis.talent_recruitment.entity.response.CommonResponse;
 import com.curtis.talent_recruitment.entity.response.QueryResponse;
 
+import java.util.Map;
+
 /**
  * @Author: Curtis
  * @Description:
@@ -62,4 +64,31 @@ public interface ICompanyService {
      * @return
      */
     QueryResponse getDetailByHRID(String sHRID);
+
+    /**
+     * 根据条件分页查询
+     *
+     * @param lCurrentPage
+     * @param lPageSize
+     * @param mpParam
+     * @return
+     */
+    QueryResponse getByPage(Long lCurrentPage, Long lPageSize, Map<String, Object> mpParam);
+
+    /**
+     * 根据公司id更新状态
+     *
+     * @param id
+     * @return
+     */
+    CommonResponse updateStatus(String id);
+
+    /**
+     * 更新公司logo图片
+     *
+     * @param id
+     * @param sPicture
+     * @return
+     */
+    CommonResponse updatePicture(String id, String sPicture);
 }

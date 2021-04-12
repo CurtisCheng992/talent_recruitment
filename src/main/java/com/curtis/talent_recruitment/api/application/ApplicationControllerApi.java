@@ -11,6 +11,8 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 
+import java.util.Map;
+
 /**
  * @Author: Curtis
  * @Description:
@@ -87,5 +89,16 @@ public interface ApplicationControllerApi {
     @ApiImplicitParam(name = "sHRID", value = "HRID", required = true,
             paramType = "path", dataType = "String")
     QueryResponse getCountByHR(String sHRID);
+
+    @ApiOperation("根据条件分页查询")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "lCurrentPage", value = "当前分页", required = true,
+                    paramType = "path", dataType = "Long"),
+            @ApiImplicitParam(name = "lPageSize", value = "分页大小", required = true,
+                    paramType = "path", dataType = "Long"),
+            @ApiImplicitParam(name = "mpParam", value = "参数", required = false,
+                    paramType = "body", dataType = "Map")
+    })
+    QueryResponse getByPage(Long lCurrentPage, Long lPageSize, Map<String, Object> mpParam);
 
 }

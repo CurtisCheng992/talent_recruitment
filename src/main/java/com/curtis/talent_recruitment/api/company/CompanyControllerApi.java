@@ -6,7 +6,10 @@ import com.curtis.talent_recruitment.entity.response.CommonResponse;
 import com.curtis.talent_recruitment.entity.response.QueryResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+
+import java.util.Map;
 
 /**
  * @Author: Curtis
@@ -46,4 +49,25 @@ public interface CompanyControllerApi {
     @ApiImplicitParam(name = "sHRID", value = "HRID", required = true,
             paramType = "path", dataType = "String")
     QueryResponse getDetailByHRID(String sHRID);
+
+    @ApiOperation("根据条件分页查询")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "lCurrentPage", value = "当前分页", required = true,
+                    paramType = "path", dataType = "Long"),
+            @ApiImplicitParam(name = "lPageSize", value = "分页大小", required = true,
+                    paramType = "path", dataType = "Long"),
+            @ApiImplicitParam(name = "mpParam", value = "参数", required = false,
+                    paramType = "body", dataType = "Map")
+    })
+    QueryResponse getByPage(Long lCurrentPage, Long lPageSize, Map<String, Object> mpParam);
+
+    @ApiOperation("审核或注销一个公司信息")
+    @ApiImplicitParam(name = "id", value = "公司主键id", required = true,
+            paramType = "path", dataType = "String")
+    CommonResponse updateStatus(String id);
+
+    @ApiOperation("更新简历照片")
+    @ApiImplicitParam(name = "id", value = "简历主键id", required = true,
+            paramType = "path", dataType = "String")
+    CommonResponse updatePicture(String id, String sPicture);
 }

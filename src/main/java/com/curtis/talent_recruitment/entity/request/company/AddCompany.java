@@ -33,5 +33,7 @@ public class AddCompany {
     private String sIntroduction; //宣传语
     @JsonProperty("sHRID")
     private String sHRID; //HRID
+    @JsonProperty("sHRUsername")
+    private String sHRUsername;
 
 }

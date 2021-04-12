@@ -8,15 +8,14 @@ import com.curtis.talent_recruitment.school.dao.SchoolDao;
 import com.curtis.talent_recruitment.school.entity.School;
 import com.curtis.talent_recruitment.school.service.ISchoolService;
 import com.curtis.talent_recruitment.utils.exception.ExceptionThrowUtils;
+import com.github.pagehelper.PageInfo;
+import com.hs.commons.utils.PageUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Author: Curtis
@@ -35,7 +34,8 @@ public class SchoolServiceImpl implements ISchoolService {
      */
     @Override
     public QueryResponse getList() {
-        List<School> arrSchool = schoolDao.getList();
+        Map<String, Object> mpParam = new HashMap<>();
+        List<School> arrSchool = schoolDao.getList(mpParam);
         return new QueryResponse(CommonCode.SUCCESS,new QueryResult(arrSchool,arrSchool.size()));
     }
 
@@ -59,5 +59,19 @@ public class SchoolServiceImpl implements ISchoolService {
         List<School> arrSchool = new ArrayList<>();
         arrSchool.add(school);
         return new QueryResponse(CommonCode.SUCCESS,new QueryResult(arrSchool,arrSchool.size()));
+    }
+
+    @Override
+    public QueryResponse getByPage(Long lCurrentPage, Long lPageSize, Map<String, Object> mpParam) {
+        mpParam.put("pageNumber", lCurrentPage);
+        mpParam.put("pageSize", lPageSize);
+        //分页
+        PageUtils.initPaging(mpParam);
+        //查询列表
+        List<School> arrSchool = schoolDao.getList(mpParam);
+        //分页
+        PageInfo<School> page = new PageInfo<>(arrSchool);
+        List<PageInfo<School>> arrPage = Collections.singletonList(page);
+        return new QueryResponse(CommonCode.SUCCESS, new QueryResult(arrPage, arrPage.size()));
     }
 }

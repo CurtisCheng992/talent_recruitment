@@ -15,7 +15,8 @@ public enum  CompanyCode implements ResponseCode {
     UPDATE_FAIL( false, 40004, "更新公司信息失败！" ),
     INVALID_PARAM( false, 40005, "sCompanyName字段不能为空！" ),
     DELETE_FAIL_DEPARTMENT_EXIST( false, 40006, "删除失败，请先删除该公司下的部门！" ),
-    HR_NOT_FOUNT( false, 40007, "找不到HR用户！" );
+    HR_NOT_FOUNT( false, 40007, "找不到HR用户！" ),
+    UPDATE_STATUS_FAIL( false, 40008, "更新公司状态失败！" );
 
     CompanyCode(boolean success, int code, String message) {
         this.success = success;

@@ -17,7 +17,7 @@ public interface DepartmentDao {
     /**
      * 查询所有部门信息
      */
-    List<Department> getList();
+    List<Department> getList(Map<String, Object> mpParam);
 
     /**
      * 根据id查询一个部门信息

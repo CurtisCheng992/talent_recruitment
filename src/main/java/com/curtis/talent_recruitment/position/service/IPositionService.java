@@ -5,6 +5,8 @@ import com.curtis.talent_recruitment.entity.request.position.UpdatePosition;
 import com.curtis.talent_recruitment.entity.response.CommonResponse;
 import com.curtis.talent_recruitment.entity.response.QueryResponse;
 
+import java.util.Map;
+
 /**
  * @Author: Curtis
  * @Description:
@@ -83,4 +85,33 @@ public interface IPositionService {
      * @return
      */
     QueryResponse getCount(String sHRID);
+
+    /**
+     * 根据分类名称查询职位信息
+     *
+     * @param lCurrentpage
+     * @param lPageSize
+     * @param mpParam
+     * @return
+     */
+    QueryResponse getListByCategoryName(Long lCurrentpage, Long lPageSize, Map<String,Object> mpParam);
+
+    /**
+     * 根据条件分页查询职位信息
+     *
+     * @param lCurrentpage
+     * @param lPageSize
+     * @param mpParam
+     * @return
+     */
+    QueryResponse getByPage(Long lCurrentpage, Long lPageSize, Map<String, Object> mpParam);
+
+    /**
+     * 根据职位id更新热门值
+     *
+     * @param sPositionID
+     * @param iHot
+     * @return
+     */
+    CommonResponse updatePositionHot(String sPositionID, Integer iHot);
 }

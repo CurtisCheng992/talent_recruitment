@@ -17,7 +17,7 @@ public interface CompanyDao {
     /**
      * 查询所有公司信息
      */
-    List<Company> getList();
+    List<Company> getList(Map<String, Object> mpParam);
 
     /**
      * 根据id查询一个公司信息
@@ -53,4 +53,28 @@ public interface CompanyDao {
      * @param mpParam
      */
     List<Company> getHot(Map<String, Object> mpParam);
+
+    /**
+     * 根据公司名称查询id
+     *
+     * @param sCompanyName
+     * @return
+     */
+    String getIdByName(String sCompanyName);
+
+    /**
+     * 根据公司id更新状态
+     *
+     * @param mpParam
+     * @return
+     */
+    int updateStatus(Map<String, Object> mpParam);
+
+    /**
+     * 更新公司logo图片
+     *
+     * @param mpParam
+     * @return
+     */
+    int updatePicture(Map<String, Object> mpParam);
 }

@@ -15,16 +15,15 @@ import com.curtis.talent_recruitment.entity.response.code.department.DepartmentC
 import com.curtis.talent_recruitment.entity.response.result.QueryResult;
 import com.curtis.talent_recruitment.position.dao.PositionDao;
 import com.curtis.talent_recruitment.utils.exception.ExceptionThrowUtils;
+import com.github.pagehelper.PageInfo;
 import com.hs.commons.utils.ConvertUtils;
+import com.hs.commons.utils.PageUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Author: Curtis
@@ -52,7 +51,14 @@ public class DepartmentServiceImpl implements IDepartmentService {
      */
     @Override
     public QueryResponse getList() {
-        List<Department> arrDepartment = departmentDao.getList();
+        Map<String, Object> mpParam = new HashMap<>();
+        List<Department> arrDepartment = departmentDao.getList(mpParam);
+        Map<String, Object> mpGet = new HashMap<>();
+        for (Department department : arrDepartment) {
+            mpGet.put("id",department.getSCompanyID());
+            Company company = companyDao.getDetail(mpGet);
+            department.setSCompanyName(company.getSCompanyName());
+        }
         return new QueryResponse(CommonCode.SUCCESS,new QueryResult(arrDepartment,arrDepartment.size()));
     }
 
@@ -71,6 +77,10 @@ public class DepartmentServiceImpl implements IDepartmentService {
         //根据id查询部门信息
         mpParam.put("id",id);
         Department department = departmentDao.getDetail(mpParam);
+        Map<String, Object> mpGet = new HashMap<>();
+        mpGet.put("id",department.getSCompanyID());
+        Company company = companyDao.getDetail(mpGet);
+        department.setSCompanyName(company.getSCompanyName());
         if (ObjectUtils.isEmpty(department)){
             return new QueryResponse(DepartmentCode.DEPARTMENT_NOT_FOUND,null);
         }
@@ -190,5 +200,30 @@ public class DepartmentServiceImpl implements IDepartmentService {
             return new CommonResponse(DepartmentCode.UPDATE_FAIL);
         }
         return new CommonResponse(CommonCode.SUCCESS);
+    }
+
+    @Override
+    public QueryResponse getByPage(Long lCurrentPage, Long lPageSize, Map<String, Object> mpParam) {
+        mpParam.put("pageNumber", lCurrentPage);
+        mpParam.put("pageSize", lPageSize);
+        //分页
+        PageUtils.initPaging(mpParam);
+        //查询列表
+        String sCompanyName = (String) mpParam.get("sCompanyName");
+        if (StringUtils.isNoneBlank(sCompanyName)){
+            String sCompanyID = companyDao.getIdByName(sCompanyName);
+            mpParam.put("sCompanyID",sCompanyID);
+        }
+        List<Department> arrDepartment = departmentDao.getList(mpParam);
+        Map<String, Object> mpGet = new HashMap<>();
+        for (Department department : arrDepartment) {
+            mpGet.put("id",department.getSCompanyID());
+            Company company = companyDao.getDetail(mpGet);
+            department.setSCompanyName(company.getSCompanyName());
+        }
+        //分页
+        PageInfo<Department> page = new PageInfo<>(arrDepartment);
+        List<PageInfo<Department>> arrPage = Collections.singletonList(page);
+        return new QueryResponse(CommonCode.SUCCESS, new QueryResult(arrPage, arrPage.size()));
     }
 }

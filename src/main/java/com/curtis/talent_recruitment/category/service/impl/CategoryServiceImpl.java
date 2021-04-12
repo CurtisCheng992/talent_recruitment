@@ -13,16 +13,15 @@ import com.curtis.talent_recruitment.entity.response.result.QueryResult;
 import com.curtis.talent_recruitment.position.dao.PositionDao;
 import com.curtis.talent_recruitment.user.dao.UserDao;
 import com.curtis.talent_recruitment.utils.exception.ExceptionThrowUtils;
+import com.github.pagehelper.PageInfo;
 import com.hs.commons.utils.ConvertUtils;
+import com.hs.commons.utils.PageUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Author: Curtis
@@ -201,5 +200,32 @@ public class CategoryServiceImpl implements ICategoryService {
             return new CommonResponse(CategoryCode.UPDATE_FAIL);
         }
         return new CommonResponse(CommonCode.SUCCESS);
+    }
+
+    @Override
+    public QueryResponse getByName(String sCategoryName) {
+        //参数判断
+        if(!StringUtils.isNoneBlank(sCategoryName)){
+            ExceptionThrowUtils.cast(CommonCode.INVALID_PARAM);
+        }
+        //查询
+        Map<String, Object> mpParam = new HashMap<>();
+        mpParam.put("sCategoryName",sCategoryName);
+        Category category = categoryDao.getDetail(mpParam);
+        List<Category> arrCategory = Collections.singletonList(category);
+        return new QueryResponse(CommonCode.SUCCESS, new QueryResult(arrCategory, arrCategory.size()));
+    }
+
+    @Override
+    public QueryResponse getByPage(Long lCurrentPage, Long lPageSize, Map<String, Object> mpParam) {
+        mpParam.put("pageNumber", lCurrentPage);
+        mpParam.put("pageSize", lPageSize);
+        //分页
+        PageUtils.initPaging(mpParam);
+        //查询列表
+        List<Category> arrCategory = categoryDao.getList();
+        PageInfo<Category> page = new PageInfo<>(arrCategory);
+        List<PageInfo<Category>> arrPage = Collections.singletonList(page);
+        return new QueryResponse(CommonCode.SUCCESS, new QueryResult(arrPage, arrPage.size()));
     }
 }

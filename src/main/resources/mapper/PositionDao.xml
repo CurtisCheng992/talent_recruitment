@@ -14,8 +14,20 @@
         <if test="sHRID != null and sHRID !=''">
             and sHRID = #{sHRID}
         </if>
+        <if test="sCategoryID !=null and sCategoryID != ''">
+            and sCategoryID = #{sCategoryID}
+        </if>
+        <if test="sPositionName !=null and sPositionName != ''">
+            and sPositionName like CONCAT('%', #{sPositionName}, '%')
+        </if>
+        <if test="sCompanyID !=null and sCompanyID != ''">
+            and sCompanyID = #{sCompanyID}
+        </if>
+        <if test="sWorkCity !=null and sWorkCity != ''">
+            and sWorkCity like CONCAT('%', #{sWorkCity}, '%')
+        </if>
         order by
-            dCreateTime desc
+            dUpdateTime desc
     </select>
 
     <!-- 根据id查询一个职位信息 -->
@@ -113,6 +125,11 @@
             id, sPositionName, sRequirement, iQuantity, sWorkCity, sSalary, sWelfare, sCategoryID, sDepartmentID, sCompanyID, sHRID, iViews, dCreateTime, dUpdateTime, iHot, sEducation
         from
             t_position
+        where
+            1=1
+        <if test="sCompanyID != null and sCompanyID !=''">
+            and sCompanyID = #{sCompanyID}
+        </if>
         order by
             iHot desc
         <if test="iLimit != null">
@@ -157,5 +174,15 @@
         order by
             iHot desc
     </select>
+
+    <!--根据职位id更新职位的热门值-->
+    <update id="updatePositionHot">
+        update
+            t_position
+        set
+            iHot = iHot + #{iHot}
+        where
+            id = #{sPositionID}
+    </update>
 
 </mapper>

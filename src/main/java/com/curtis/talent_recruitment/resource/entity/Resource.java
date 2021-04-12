@@ -22,9 +22,11 @@ public class Resource {
     @JsonProperty("id")
     private String id; //主键id
     @JsonProperty("sUserID")
-    private String sUserID;
+    private String sUserID; //用户主键id
     @JsonProperty("iType")
     private Integer iType; //文件类型 0目录 1文件
+    @JsonProperty("sSize")
+    private String sSize; //文件大小
     @JsonProperty("sExt")
     private String sExt; //文件拓展名，如果类型为目录，则拓展名为空
     @JsonProperty("sName")
@@ -37,5 +39,7 @@ public class Resource {
     private Date dCreateTime; //创建时间
     @JsonProperty("dUpdateTime")
     private Date dUpdateTime; //更新时间
+    @JsonProperty("sUsername")
+    private String sUsername; //用户名
 
 }

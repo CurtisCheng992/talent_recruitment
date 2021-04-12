@@ -17,7 +17,7 @@ public interface ResumeDao {
     /**
      * 查询所有简历信息
      */
-    List<Resume> getList();
+    List<Resume> getList(Map<String, Object> mpParam);
 
     /**
      * 根据id查询一个简历信息
@@ -66,4 +66,12 @@ public interface ResumeDao {
      * @return
      */
     Resume getByUserID(Map<String, Object> mpParam);
+
+    /**
+     * 根据id更新简历图片
+     *
+     * @param mpParam
+     * @return
+     */
+    int updatePicture(Map<String, Object> mpParam);
 }

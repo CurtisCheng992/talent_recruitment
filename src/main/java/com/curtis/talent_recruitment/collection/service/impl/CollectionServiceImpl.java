@@ -3,6 +3,8 @@ package com.curtis.talent_recruitment.collection.service.impl;
 import com.curtis.talent_recruitment.collection.dao.CollectionDao;
 import com.curtis.talent_recruitment.collection.entity.Collection;
 import com.curtis.talent_recruitment.collection.service.ICollectionService;
+import com.curtis.talent_recruitment.company.dao.CompanyDao;
+import com.curtis.talent_recruitment.company.entity.Company;
 import com.curtis.talent_recruitment.entity.request.collection.AddCollection;
 import com.curtis.talent_recruitment.entity.request.collection.UpdateCollection;
 import com.curtis.talent_recruitment.entity.response.CommonResponse;
@@ -15,7 +17,9 @@ import com.curtis.talent_recruitment.position.entity.Position;
 import com.curtis.talent_recruitment.user.dao.UserDao;
 import com.curtis.talent_recruitment.user.entity.User;
 import com.curtis.talent_recruitment.utils.exception.ExceptionThrowUtils;
+import com.github.pagehelper.PageInfo;
 import com.hs.commons.utils.ConvertUtils;
+import com.hs.commons.utils.PageUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +44,9 @@ public class CollectionServiceImpl implements ICollectionService {
     @Autowired
     private PositionDao positionDao;
 
+    @Autowired
+    private CompanyDao companyDao;
+
     /**
      * 查询所有收藏信息
      * @return
@@ -54,6 +61,14 @@ public class CollectionServiceImpl implements ICollectionService {
             collection.setSPositionName(position.getSPositionName());
             collection.setSSalary(position.getSSalary());
             collection.setSWorkCity(position.getSWorkCity());
+            collection.setIQuantity(position.getIQuantity());
+            collection.setSRequirement(position.getSRequirement());
+            mpGet.put("id",position.getSCompanyID());
+            Company company = companyDao.getDetail(mpGet);
+            collection.setSCompanyName(company.getSCompanyName());
+            mpGet.put("id",collection.getSUserID());
+            User user = userDao.getDetail(mpGet);
+            collection.setSUsername(user.getSUsername());
         }
         return new QueryResponse(CommonCode.SUCCESS,new QueryResult(arrCollection, arrCollection.size()));
     }
@@ -82,6 +97,14 @@ public class CollectionServiceImpl implements ICollectionService {
         collection.setSPositionName(position.getSPositionName());
         collection.setSSalary(position.getSSalary());
         collection.setSWorkCity(position.getSWorkCity());
+        collection.setIQuantity(position.getIQuantity());
+        collection.setSRequirement(position.getSRequirement());
+        mpGet.put("id",position.getSCompanyID());
+        Company company = companyDao.getDetail(mpGet);
+        collection.setSCompanyName(company.getSCompanyName());
+        mpGet.put("id",collection.getSUserID());
+        User user = userDao.getDetail(mpGet);
+        collection.setSUsername(user.getSUsername());
         List<Collection> arrCollection = new ArrayList<>();
         arrCollection.add(collection);
         return new QueryResponse(CommonCode.SUCCESS, new QueryResult(arrCollection, arrCollection.size()));
@@ -132,6 +155,11 @@ public class CollectionServiceImpl implements ICollectionService {
         mpParam.put("dCreateTime", new Date());
         mpParam.put("dUpdateTime", new Date());
         int iResult = collectionDao.add(mpParam);
+        //修改该职位的热门值, 收藏+1
+        Map<String, Object> mpHot = new HashMap<>();
+        mpHot.put("sPositionID", addCollection.getSPositionID());
+        mpHot.put("iHot",1);
+        positionDao.updatePositionHot(mpHot);
         if (iResult <= 0){
             return new CommonResponse(CollectionCode.INSERT_FAIL);
         }
@@ -242,6 +270,12 @@ public class CollectionServiceImpl implements ICollectionService {
             collection.setSPositionName(position.getSPositionName());
             collection.setSSalary(position.getSSalary());
             collection.setSWorkCity(position.getSWorkCity());
+            collection.setIQuantity(position.getIQuantity());
+            collection.setSRequirement(position.getSRequirement());
+            mpGet.put("id",position.getSCompanyID());
+            Company company = companyDao.getDetail(mpGet);
+            collection.setSCompanyName(company.getSCompanyName());
+            collection.setSUsername(user.getSUsername());
         }
         return new QueryResponse(CommonCode.SUCCESS, new QueryResult(arrCollection, arrCollection.size()));
     }
@@ -331,5 +365,35 @@ public class CollectionServiceImpl implements ICollectionService {
         int iCount = collectionDao.getCount(mpParam);
         List<Integer> arrCount = Collections.singletonList(iCount);
         return new QueryResponse(CommonCode.SUCCESS,new QueryResult(arrCount, arrCount.size()));
+    }
+
+    @Override
+    public QueryResponse getByPage(Long lCurrentPage, Long lPageSize, Map<String, Object> mpParam) {
+        mpParam.put("pageNumber", lCurrentPage);
+        mpParam.put("pageSize", lPageSize);
+        //分页
+        PageUtils.initPaging(mpParam);
+        //查询列表
+        List<Collection> arrCollection = collectionDao.getListByUserID(mpParam);
+        Map<String, Object> mpGet = new HashMap<>();
+        for (Collection collection : arrCollection) {
+            mpGet.put("id",collection.getSPositionID());
+            Position position = positionDao.getDetail(mpGet);
+            collection.setSPositionName(position.getSPositionName());
+            collection.setSSalary(position.getSSalary());
+            collection.setSWorkCity(position.getSWorkCity());
+            collection.setIQuantity(position.getIQuantity());
+            collection.setSRequirement(position.getSRequirement());
+            mpGet.put("id",position.getSCompanyID());
+            Company company = companyDao.getDetail(mpGet);
+            collection.setSCompanyName(company.getSCompanyName());
+            mpGet.put("id",collection.getSUserID());
+            User user = userDao.getDetail(mpGet);
+            collection.setSUsername(user.getSUsername());
+        }
+        //分页
+        PageInfo<Collection> page = new PageInfo<>(arrCollection);
+        List<PageInfo<Collection>> arrPage = Collections.singletonList(page);
+        return new QueryResponse(CommonCode.SUCCESS, new QueryResult(arrPage, arrPage.size()));
     }
 }

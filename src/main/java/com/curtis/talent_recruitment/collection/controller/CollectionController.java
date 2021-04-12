@@ -9,6 +9,8 @@ import com.curtis.talent_recruitment.entity.response.QueryResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 /**
  * @Author: Curtis
  * @Description:
@@ -73,6 +75,12 @@ public class CollectionController implements CollectionControllerApi {
     @GetMapping("getCount/position/user/{sPositionID}/{sUserID}")
     public QueryResponse getCount(@PathVariable String sPositionID, @PathVariable String sUserID) {
         return collectionService.getCount(sPositionID, sUserID);
+    }
+
+    @Override
+    @PostMapping("getByPage/currentPage/pageSize/{lCurrentPage}/{lPageSize}")
+    public QueryResponse getByPage(@PathVariable Long lCurrentPage, @PathVariable Long lPageSize, @RequestBody Map<String, Object> mpParam) {
+        return collectionService.getByPage(lCurrentPage, lPageSize, mpParam);
     }
 
 }

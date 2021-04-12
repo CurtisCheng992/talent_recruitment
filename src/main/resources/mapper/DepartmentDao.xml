@@ -9,6 +9,17 @@
             id, sDepartmentName, sDescription, sCompanyID
         from
             t_department
+        where
+            1=1
+        <if test="sDepartmentName != null and sDepartmentName != ''">
+            and sDepartmentName like CONCAT('%', #{sDepartmentName}, '%')
+        </if>
+        <if test="sCompanyID != null and sCompanyID != ''">
+            and sCompanyID = #{sCompanyID}
+        </if>
+        <if test="sHRID != null and sHRID != ''">
+            and sCompanyID in (select id from t_company where sHRID = #{sHRID})
+        </if>
     </select>
 
     <!-- 根据id查询一个部门信息 -->

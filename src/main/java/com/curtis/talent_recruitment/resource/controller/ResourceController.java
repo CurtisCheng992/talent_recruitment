@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author: Curtis
@@ -64,5 +65,11 @@ public class ResourceController implements ResourceControllerApi {
     @GetMapping("download/resource/{sResourceID}")
     public void download(@PathVariable String sResourceID, HttpServletResponse response) {
         resourceService.download(sResourceID, response);
+    }
+
+    @Override
+    @PostMapping("getByPage/currentPage/pageSize/{lCurrentPage}/{lPageSize}")
+    public QueryResponse getByPage(@PathVariable Long lCurrentPage, @PathVariable Long lPageSize, @RequestBody Map<String, Object> mpParam) {
+        return resourceService.getByPage(lCurrentPage, lPageSize, mpParam);
     }
 }

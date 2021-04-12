@@ -23,7 +23,7 @@ public class MailUtils {
         // true 代表是 multipart 类型
         MimeMessageHelper helper = new MimeMessageHelper( message, false );
         helper.setSubject( subject );
-        helper.setFrom( "colinchong@163.com" );
+        helper.setFrom( "981333949@qq.com" );
         helper.setTo( addr );
         // true 代表支持 HTML
         helper.setText( content, true );

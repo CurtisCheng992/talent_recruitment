@@ -41,8 +41,10 @@ public class Company {
     private String sIntroduction; //宣传语
     @JsonProperty("sHRID")
     private String sHRID; //HRID
+    @JsonProperty("sHRUsername")
+    private String sHRUsername; //sHRUsername
     @JsonProperty("iStatus")
-    private String iStatus; //审核状态 0待审核 1审核通过
+    private Integer iStatus; //审核状态 0待审核 1审核通过 2已注销
     @JsonProperty("dCreateTime")
     private Date dCreateTime; //创建时间
     @JsonProperty("dUpdateTime")

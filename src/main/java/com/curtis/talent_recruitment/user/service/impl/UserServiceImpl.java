@@ -2,16 +2,13 @@ package com.curtis.talent_recruitment.user.service.impl;
 
 import com.aliyuncs.exceptions.ClientException;
 import com.curtis.talent_recruitment.application.dao.ApplicationDao;
+import com.curtis.talent_recruitment.auth.entity.UserInfo;
 import com.curtis.talent_recruitment.category.dao.CategoryDao;
 import com.curtis.talent_recruitment.category.entity.Category;
 import com.curtis.talent_recruitment.collection.dao.CollectionDao;
-import com.curtis.talent_recruitment.comment.dao.CommentDao;
 import com.curtis.talent_recruitment.department.dao.UserDepartmentDao;
 import com.curtis.talent_recruitment.entity.request.auth.LoginUser;
-import com.curtis.talent_recruitment.entity.request.user.AddHR;
-import com.curtis.talent_recruitment.entity.request.user.AddUser;
-import com.curtis.talent_recruitment.entity.request.user.RegisterUser;
-import com.curtis.talent_recruitment.entity.request.user.UpdateUser;
+import com.curtis.talent_recruitment.entity.request.user.*;
 import com.curtis.talent_recruitment.entity.response.CommonResponse;
 import com.curtis.talent_recruitment.entity.response.QueryResponse;
 import com.curtis.talent_recruitment.entity.response.code.CommonCode;
@@ -23,9 +20,14 @@ import com.curtis.talent_recruitment.school.entity.School;
 import com.curtis.talent_recruitment.user.dao.UserDao;
 import com.curtis.talent_recruitment.user.entity.User;
 import com.curtis.talent_recruitment.user.service.IUserService;
+import com.curtis.talent_recruitment.utils.auth.CookieUtils;
+import com.curtis.talent_recruitment.utils.auth.JwtConfig;
+import com.curtis.talent_recruitment.utils.auth.JwtUtils;
 import com.curtis.talent_recruitment.utils.exception.ExceptionThrowUtils;
 import com.curtis.talent_recruitment.utils.user.*;
+import com.github.pagehelper.PageInfo;
 import com.hs.commons.utils.ConvertUtils;
+import com.hs.commons.utils.PageUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -36,6 +38,8 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -70,9 +74,6 @@ public class UserServiceImpl implements IUserService {
     private UserDepartmentDao userDepartmentDao;
 
     @Autowired
-    private CommentDao commentDao;
-
-    @Autowired
     private MailUtils mailUtils;
 
     @Autowired
@@ -80,6 +81,9 @@ public class UserServiceImpl implements IUserService {
 
     @Autowired
     private SmsConfig smsConfig;
+
+    @Autowired
+    private JwtConfig config;
 
     @Autowired
     private StringRedisTemplate redisTemplate;
@@ -106,8 +110,12 @@ public class UserServiceImpl implements IUserService {
      * @return
      */
     @Override
-    public QueryResponse getList() {
-        List<User> arrUser = userDao.getList();
+    public QueryResponse getList(Integer iRoleType) {
+        Map<String, Object> mpParam = new HashMap<>();
+        if (iRoleType ==1 || iRoleType == 2 || iRoleType == 3){
+            mpParam.put("iRoleType",iRoleType);
+        }
+        List<User> arrUser = userDao.getList(mpParam);
         Map<String, Object> mpGet = new HashMap<>();
         for (User user : arrUser) {
             if (StringUtils.isNoneBlank(user.getSSchoolID())){
@@ -172,11 +180,10 @@ public class UserServiceImpl implements IUserService {
         if (ObjectUtils.isEmpty(addUser)) {
             ExceptionThrowUtils.cast(CommonCode.INVALID_PARAM);
         }
-        //判断sUsername,sPassword,sRealName,sPhone,sEmail,iGender是否为空
+        //判断sUsername,sPassword,sRealName,sEmail,iGender是否为空
         if (!StringUtils.isNoneBlank(addUser.getSUsername()) ||
             !StringUtils.isNoneBlank(addUser.getSPassword()) ||
             !StringUtils.isNoneBlank(addUser.getSRealName()) ||
-            !StringUtils.isNoneBlank(addUser.getSPhone()) ||
             !StringUtils.isNoneBlank(addUser.getSEmail())
         ){
             ExceptionThrowUtils.cast(UserCode.INVALID_PARAM);
@@ -188,7 +195,15 @@ public class UserServiceImpl implements IUserService {
         if (ObjectUtils.isNotEmpty(user_username)) {
             return new CommonResponse(UserCode.USERNAME_ALREADY_EXIST);
         }
-        //TODO 邮箱与电话号码判断
+        //学校转换
+        if (StringUtils.isNoneBlank(addUser.getSSchoolName())){
+            Map<String, Object> mpSchool = new HashMap<>();
+            mpSchool.put("sSchoolName", addUser.getSSchoolName());
+            School school = schoolDao.getDetail(mpSchool);
+            addUser.setSSchoolID(school.getId());
+        }else{
+            addUser.setSSchoolID(null);
+        }
         //新增求职者用户
         User user = new User();
         BeanUtils.copyProperties(addUser, user);
@@ -198,6 +213,7 @@ public class UserServiceImpl implements IUserService {
         Date date = new Date();
         user.setDCreateTime(date);
         user.setDUpdateTime(date);
+        user.setSAvatar("http://182.254.148.75/group1/M00/00/00/rBEABGBhgYmAeGj-AAANQYGm1Cs616.jpg");
         mpParam = ConvertUtils.objectToMap(user);
         int iResult = userDao.add(mpParam);
         if (iResult <= 0) {
@@ -219,11 +235,10 @@ public class UserServiceImpl implements IUserService {
         if (ObjectUtils.isEmpty(addHR)) {
             ExceptionThrowUtils.cast(CommonCode.INVALID_PARAM);
         }
-        //判断sUsername,sPassword,sRealName,sPhone,sEmail,iGender是否为空
+        //判断sUsername,sPassword,sRealName,sEmail,iGender是否为空
         if (!StringUtils.isNoneBlank(addHR.getSUsername()) ||
                 !StringUtils.isNoneBlank(addHR.getSPassword()) ||
                 !StringUtils.isNoneBlank(addHR.getSRealName()) ||
-                !StringUtils.isNoneBlank(addHR.getSPhone()) ||
                 !StringUtils.isNoneBlank(addHR.getSEmail())
         ){
             ExceptionThrowUtils.cast(UserCode.INVALID_PARAM);
@@ -235,7 +250,6 @@ public class UserServiceImpl implements IUserService {
         if (ObjectUtils.isNotEmpty(user_username)) {
             return new CommonResponse(UserCode.USERNAME_ALREADY_EXIST);
         }
-        //TODO 邮箱与电话号码判断
         //新增HR用户
         User user = new User();
         BeanUtils.copyProperties(addHR, user);
@@ -245,6 +259,7 @@ public class UserServiceImpl implements IUserService {
         Date date = new Date();
         user.setDCreateTime(date);
         user.setDUpdateTime(date);
+        user.setSAvatar("http://182.254.148.75/group1/M00/00/00/rBEABGBhgYmAeGj-AAANQYGm1Cs616.jpg");
         mpParam = ConvertUtils.objectToMap(user);
         int iResult = userDao.add(mpParam);
         if (iResult <= 0) {
@@ -282,10 +297,6 @@ public class UserServiceImpl implements IUserService {
         if (iCount >= 1){
             return new CommonResponse(UserCode.DELETE_FAIL_COLLECTION_EXIST);
         }
-        iCount = commentDao.getCount(mpCheck);
-        if (iCount >= 1){
-            return new CommonResponse(UserCode.DELETE_FAIL_COMMENT_EXIST);
-        }
         iCount = userDepartmentDao.getCount(mpCheck);
         if (iCount >= 1){
             return new CommonResponse(UserCode.DELETE_FAIL_USER_DEPARTMENT_EXIST);
@@ -296,8 +307,21 @@ public class UserServiceImpl implements IUserService {
         if (ObjectUtils.isEmpty(user)) {
             return new CommonResponse(UserCode.USER_NOT_FOUND);
         }
-        //删除用户
-        int iResult = userDao.delete(mpParam);
+        //更新用户状态
+        int iStatus = 0;
+        if (user.getIStatus() == 0){
+            iStatus = 1;
+        }else if (user.getIStatus() == 1){
+            iStatus = 0;
+        }
+        Map<String, Object> mpStatus = new HashMap<>();
+        mpStatus.put("id",user.getId());
+        mpStatus.put("iStatus",iStatus);
+        if (user.getIRoleType() == 1) { // 超级管理员不允许被调用接口注销
+            return CommonResponse.FAIL();
+        }
+        int iResult = userDao.updateStatusById(mpStatus);
+//        int iResult = userDao.delete(mpParam);
         if (iResult <= 0) {
             return new CommonResponse(UserCode.DELETE_FAIL);
         }
@@ -346,19 +370,25 @@ public class UserServiceImpl implements IUserService {
             mpParam.clear();
         }
         //判断sSchoolID是否在t_school里
-        mpParam.put("id",updateUser.getSSchoolID());
-        School school = schoolDao.getDetail(mpParam);
-        if (ObjectUtils.isEmpty(school)){
-            return new CommonResponse(UserCode.SCHOOL_NOT_FOUND);
+        if (StringUtils.isNoneBlank(updateUser.getSSchoolName())){
+            mpParam.put("sSchoolName",updateUser.getSSchoolName());
+            School school = schoolDao.getDetail(mpParam);
+            if (ObjectUtils.isEmpty(school)){
+                return new CommonResponse(UserCode.SCHOOL_NOT_FOUND);
+            }
+            updateUser.setSSchoolID(school.getId());
+            mpParam.clear();
         }
-        mpParam.clear();
         //判断sDirection是否在t_Category里
-        mpParam.put("id",updateUser.getSDirection());
-        Category category = categoryDao.getDetail(mpParam);
-        if (ObjectUtils.isEmpty(category)){
-            return new CommonResponse(UserCode.CATEGORY_NOT_FOUND);
+        if (StringUtils.isNoneBlank(updateUser.getSDirectionName())){
+            mpParam.put("sCategoryName",updateUser.getSDirectionName());
+            Category category = categoryDao.getDetail(mpParam);
+            if (ObjectUtils.isEmpty(category)){
+                return new CommonResponse(UserCode.CATEGORY_NOT_FOUND);
+            }
+            updateUser.setSDirection(category.getId());
+            mpParam.clear();
         }
-        mpParam.clear();
         //更新用户信息
         mpParam = ConvertUtils.objectToMap(updateUser);
         mpParam.put("dUpdateTime", new Date());
@@ -521,6 +551,211 @@ public class UserServiceImpl implements IUserService {
 
         registerCount();
 
+        return new CommonResponse(CommonCode.SUCCESS);
+    }
+
+    @Override
+    public CommonResponse updateAvatar(String id, String sAvatar, HttpServletRequest request, HttpServletResponse response) {
+        //参数非空判断
+        if (StringUtils.isBlank(sAvatar)){
+            ExceptionThrowUtils.cast(CommonCode.INVALID_PARAM);
+        }
+        //修改用户头像
+        Map<String, Object> mpCheck = new HashMap<>();
+        mpCheck.put("id",id);
+        User user = userDao.getDetail(mpCheck);
+        user.setSAvatar(sAvatar);
+        user.setDUpdateTime(new Date());
+        Map<String, Object> mpParam = ConvertUtils.objectToMap(user);
+        int iResult = userDao.update(mpParam);
+
+        // 重新生成 token 信息并写回
+        String cookieName = "37e5efd7f4914c32b8f4721943977f08".equals(id) ? config.getAdminCookieName() : config.getUserCookieName();
+        String token = CookieUtils.getCookieValue(request, cookieName);
+        try {
+            // 重新生成 token 信息
+            UserInfo userInfo = JwtUtils.getInfoFromToken(token, config.getPublicKey());
+            String newToken = JwtUtils.generateToken(new UserInfo(userInfo.getId(), userInfo.getSUsername(),
+                            userInfo.getIsHR(), sAvatar, userInfo.getBRememberMe(), userInfo.getIStatus()),
+                    config.getPrivateKey(), config.getExpire());
+            // 重新写入cookie
+            CookieUtils.setCookie(request, response, cookieName, newToken,
+                    // 如果用户勾选了记住我，则将 cookie 存活时间设置为 7 天
+                    userInfo.getBRememberMe() ? 14 * config.getCookieMaxAge() : config.getCookieMaxAge(),
+                    null, true);
+        } catch (Exception e) {
+            LOGGER.error("解析token信息异常！异常原因：{}", e);
+            return new CommonResponse(CommonCode.SERVER_ERROR);
+        }
+
+        return new CommonResponse(CommonCode.SUCCESS);
+    }
+
+    @Override
+    public QueryResponse getByPage(Long lCurrentPage, Long lPageSize, Map<String, Object> mpParam) {
+        mpParam.put("pageNumber", lCurrentPage);
+        mpParam.put("pageSize", lPageSize);
+        //分页
+        PageUtils.initPaging(mpParam);
+        //查询列表
+        String sRoleName = (String) mpParam.get("sRoleName");
+        if (StringUtils.isNoneBlank(sRoleName)){
+            if ("管理员".equals(sRoleName)){
+                mpParam.put("iRoleType",1);
+            }else if ("HR".equals(sRoleName)){
+                mpParam.put("iRoleType",2);
+            }else if("求职者".equals(sRoleName)){
+                mpParam.put("iRoleType",3);
+            }else if("全部".equals(sRoleName)){
+                mpParam.put("iRoleType","");
+            }
+        }
+        String sGender = (String) mpParam.get("iGender");
+        if ("1".equals(sGender) || "0".equals(sGender)){
+            Integer iGender = Integer.parseInt(sGender);
+            if (iGender != null){
+                if (iGender != 0 && iGender != 1){
+                    mpParam.put("iGender","");
+                }
+            }
+        }else{
+            mpParam.put("iGender","");
+        }
+        List<User> arrUser = userDao.getList(mpParam);
+        Map<String, Object> mpGet = new HashMap<>();
+        for (User user : arrUser) {
+            if (StringUtils.isNoneBlank(user.getSSchoolID())){
+                mpGet.put("id",user.getSSchoolID());
+                School school = schoolDao.getDetail(mpGet);
+                user.setSSchoolName(school.getSSchoolName());
+            }
+            if (StringUtils.isNoneBlank(user.getSDirection())){
+                mpGet.put("id",user.getSDirection());
+                Category category = categoryDao.getDetail(mpGet);
+                user.setSDirectionName(category.getSCategoryName());
+            }
+        }
+        //分页
+        PageInfo<User> page = new PageInfo<>(arrUser);
+        List<PageInfo<User>> arrPage = Collections.singletonList(page);
+        return new QueryResponse(CommonCode.SUCCESS, new QueryResult(arrPage, arrPage.size()));
+    }
+
+    @Override
+    public CommonResponse updateEmail(String id, EmailUser emailUser) {
+        //参数验证
+        if ((ObjectUtils.isEmpty(emailUser)) || (StringUtils.isBlank(id))){
+            ExceptionThrowUtils.cast(CommonCode.INVALID_PARAM);
+        }
+        //新邮箱校验
+        Map<String, Object> mpCheck = new HashMap<>();
+        mpCheck.put("sEmail",emailUser.getSEmail());
+        User user = userDao.getDetail(mpCheck);
+        if (ObjectUtils.isNotEmpty(user)){
+            return new CommonResponse(UserCode.UPDATE_EMAIL_FAIL_EMAIL_ALREADY_EXISTS);
+        }
+        //用户id验证
+        mpCheck.clear();
+        mpCheck.put("id",id);
+        user = userDao.getDetail(mpCheck);
+        if (ObjectUtils.isEmpty(user)){
+            return new CommonResponse(UserCode.USER_NOT_FOUND);
+        }
+        //验证码校验
+        if (!StringUtils.equals(emailUser.getSCode(), this.redisTemplate.opsForValue().get(CHANGE_KEY_PREFIX + emailUser.getSEmail()))) {
+            return new CommonResponse(UserCode.UPDATE_FAIL_CODE_WRONG);
+        }
+        //更新个人信息
+        Map<String, Object> mpParam = new HashMap<>();
+        mpParam.put("id",id);
+        mpParam.put("dUpdateTime",new Date());
+        mpParam.put("sEmail",emailUser.getSEmail());
+        int iResult = userDao.update(mpParam);
+        if (iResult <= 0){
+            return new CommonResponse(UserCode.UPDATE_FAIL);
+        }
+        return new CommonResponse(CommonCode.SUCCESS);
+    }
+
+    @Override
+    public CommonResponse updatePhone(String id, PhoneUser phoneUser) {
+        //参数验证
+        if ((ObjectUtils.isEmpty(phoneUser)) || (StringUtils.isBlank(id))){
+            ExceptionThrowUtils.cast(CommonCode.INVALID_PARAM);
+        }
+        //新手机号校验
+        Map<String, Object> mpCheck = new HashMap<>();
+        mpCheck.put("sPhone",phoneUser.getSPhone());
+        User user = userDao.getDetail(mpCheck);
+        if (ObjectUtils.isNotEmpty(user)){
+            return new CommonResponse(UserCode.PHONE_HAS_BEEN_REGISTERED);
+        }
+        //用户id验证
+        mpCheck.clear();
+        mpCheck.put("id",id);
+        user = userDao.getDetail(mpCheck);
+        if (ObjectUtils.isEmpty(user)){
+            return new CommonResponse(UserCode.USER_NOT_FOUND);
+        }
+        //验证码校验
+        if (!StringUtils.equals(phoneUser.getSCode(), this.redisTemplate.opsForValue().get(CHANGE_KEY_PREFIX + phoneUser.getSPhone()))) {
+            return new CommonResponse(UserCode.UPDATE_FAIL_CODE_WRONG);
+        }
+        //更新用户信息
+        Map<String, Object> mpParam = new HashMap<>();
+        mpParam.put("id",id);
+        mpParam.put("dUpdateTime",new Date());
+        mpParam.put("sPhone",phoneUser.getSPhone());
+        int iResult = userDao.update(mpParam);
+        if (iResult <= 0){
+            return new CommonResponse(UserCode.UPDATE_FAIL);
+        }
+        return new CommonResponse(CommonCode.SUCCESS);
+    }
+
+    @Override
+    public QueryResponse getEmailById(String id) {
+        //参数验证
+        if (StringUtils.isBlank(id)){
+            ExceptionThrowUtils.cast(CommonCode.INVALID_PARAM);
+        }
+        //用户验证
+        Map<String, Object> mpParam = new HashMap<>();
+        mpParam.put("id",id);
+        User user = userDao.getDetail(mpParam);
+        if (ObjectUtils.isEmpty(user)){
+            return new QueryResponse(UserCode.USER_NOT_FOUND, null);
+        }
+        List<String> arrEmail = Collections.singletonList(user.getSEmail());
+        return new QueryResponse(CommonCode.SUCCESS, new QueryResult(arrEmail, arrEmail.size()));
+    }
+
+    @Override
+    public CommonResponse updatePassword(String id, PasswordUser passwordUser) {
+        //参数验证
+        if ((ObjectUtils.isEmpty(passwordUser) || (StringUtils.isBlank(id)))){
+            ExceptionThrowUtils.cast(CommonCode.INVALID_PARAM);
+        }
+        //用户验证
+        Map<String, Object> mpCheck = new HashMap<>();
+        mpCheck.put("id",id);
+        User user = userDao.getDetail(mpCheck);
+        if (ObjectUtils.isEmpty(user)){
+            return new CommonResponse(UserCode.USER_NOT_FOUND);
+        }
+        //验证码校验
+        if (!StringUtils.equals(passwordUser.getSCode(), this.redisTemplate.opsForValue().get(MODIFY_KEY_PREFIX + passwordUser.getSEmail()))) {
+            return new CommonResponse(UserCode.UPDATE_PASSWORD_FAIL_CODE_WRONG);
+        }
+        //更新人员信息
+        Map<String, Object> mpParam = new HashMap<>();
+        mpParam.put("dUpdateTime",new Date());
+        mpParam.put("id",id);
+        mpParam.put("sPassword", passwordUser.getSPassword());
+        int iResult = userDao.update(mpParam);
+        if (iResult <= 0){
+            return new CommonResponse(UserCode.UPDATE_FAIL);
+        }
         return new CommonResponse(CommonCode.SUCCESS);
     }
 

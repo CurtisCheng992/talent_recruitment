@@ -27,7 +27,11 @@ public enum UserCode implements ResponseCode {
     EMAIL_HAS_BEEN_REGISTERED( false, 10015, "该邮箱地址已被注册！" ),
     REGISTER_FAIL_CODE_WRONG( false, 10016, "验证码错误！注册失败！" ),
     REGISTER_FAIL_USERNAME_CONFLICT( false, 10017, "此用户名太受欢迎，请更换一个吧！" ),
-    REGISTER_FAIL_ROLETYPE_NOT_FOUND( false, 10018, "角色类型不存在！" );
+    REGISTER_FAIL_ROLETYPE_NOT_FOUND( false, 10018, "角色类型不存在！" ),
+    UPDATE_EMAIL_FAIL_EMAIL_ALREADY_EXISTS( false, 10019, "修改邮箱失败，该邮箱已存在！" ),
+    UPDATE_FAIL_CODE_WRONG( false, 10020, "修改失败，验证码错误！" ),
+    PHONE_HAS_BEEN_REGISTERED( false, 10021, "该手机号码已被注册！" ),
+    UPDATE_PASSWORD_FAIL_CODE_WRONG( false, 10022, "修改密码失败，验证码错误！" );
 
     private boolean success;
     private int code;

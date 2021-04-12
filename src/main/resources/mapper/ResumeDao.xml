@@ -10,6 +10,24 @@
             sWorkExperience, sCertificate, sJobDesire, sSkillsAndOthers, dCreateTime, dUpdateTIme
         from
             t_resume
+        where
+            1=1
+        <if test="iGender != null and iGender != '' and iGender !='all'">
+            and sUserID in (select id from t_user where iGender = #{iGender})
+        </if>
+        <if test="sEducation != null and sEducation != '' and sEducation != 'all'">
+            and sUserID in (select id from t_user where sEducation = #{sEducation})
+        </if>
+        <if test="sRealName != null and sRealName != ''">
+            and sUserID in (select id from t_user where sRealName = #{sRealName})
+        </if>
+        <if test="sProvince != null and sProvince != ''">
+            and sUserID in (select id from t_user where sProvince = #{sProvince})
+        </if>
+        <if test="sCity != null and sCity != ''">
+            and sUserID in (select id from t_user where sCity = #{sCity})
+        </if>
+        order by dUpdateTime desc
     </select>
 
     <!-- 根据id查询一个简历信息 -->
@@ -109,5 +127,15 @@
         where
             sUserID = #{sUserID}
     </select>
+
+    <!--根据id更新简历图片-->
+    <update id="updatePicture">
+        update
+            t_resume
+        set
+            sPicture = #{sPicture}
+        where
+            id = #{id}
+    </update>
 
 </mapper>

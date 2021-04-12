@@ -9,6 +9,21 @@
             id, sCompanyName, sCompanyLogo, sCompanyType, sDescription, sTelephone, sAddress, iHot, sIntroduction, sHRID, iStatus, dCreateTime, dUpdateTime
         from
             t_company
+        where
+            1=1
+        <if test="sCompanyName != null and sCompanyName != ''">
+            and sCompanyName like CONCAT('%', #{sCompanyName}, '%')
+        </if>
+        <if test="sCompanyType != null and sCompanyType != ''">
+            and sCompanyType like CONCAT('%', #{sCompanyType}, '%')
+        </if>
+        <if test="sDescription != null and sDescription != ''">
+            and sDescription like CONCAT('%', #{sDescription}, '%')
+        </if>
+        <if test="sAddress != null and sAddress != ''">
+            and sAddress like CONCAT('%', #{sAddress}, '%')
+        </if>
+        order by dUpdateTime desc
     </select>
 
     <!-- 根据id查询一个公司信息 -->
@@ -24,6 +39,9 @@
         </if>
         <if test="sHRID != null and sHRID != ''">
             and sHRID = #{sHRID}
+        </if>
+        <if test="sCompanyName != null and sCompanyName != ''">
+            and sCompanyName = #{sCompanyName}
         </if>
     </select>
 
@@ -88,5 +106,35 @@
             limit 0,#{iLimit}
         </if>
     </select>
+
+    <!--根据公司名称查询id-->
+    <select id="getIdByName" resultType="String">
+        select
+            id
+        from
+            t_company
+        where
+            sCompanyName = #{sCompanyName}
+    </select>
+
+    <!--根据公司id更新状态-->
+    <update id="updateStatus">
+        update
+            t_company
+        set
+            iStatus = #{iStatus}
+        where
+            id = #{id}
+    </update>
+
+    <!--更新公司logo图片-->
+    <update id="updatePicture">
+        update
+            t_company
+        set
+            sCompanyLogo = #{sPicture}
+        where
+            id = #{id}
+    </update>
 
 </mapper>

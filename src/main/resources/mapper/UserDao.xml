@@ -29,6 +29,27 @@
 		    dUpdateTime
 		from
 		    t_user
+		where
+			1=1
+		<if test="iRoleType != null and iRoleType != ''">
+			and iRoleType = #{iRoleType}
+		</if>
+		<if test="iGender != null and iGender != ''">
+			and iGender = #{iGender}
+		</if>
+		<if test="sUsername != null and sUsername != ''">
+			and sUsername like CONCAT('%', #{sUsername}, '%')
+		</if>
+		<if test="sRealName != null and sRealName != ''">
+			and sRealName like CONCAT('%', #{sRealName}, '%')
+		</if>
+		<if test="sEmail != null and sEmail != ''">
+			and sEmail like CONCAT('%', #{sEmail}, '%')
+		</if>
+		<if test="sPhone != null and sPhone != ''">
+			and sPhone like CONCAT('%', #{sPhone}, '%')
+		</if>
+		order by dUpdateTime desc
 	</select>
 
     <!-- 根据id查询一个用户 -->
@@ -224,5 +245,15 @@
 			and sDirection = #{sDirection}
 		</if>
 	</select>
+
+	<!--根据用户id更新用户状态-->
+	<update id="updateStatusById">
+		update
+			t_user
+		set
+			iStatus = #{iStatus}
+		where
+			id = #{id}
+	</update>
 
 </mapper>

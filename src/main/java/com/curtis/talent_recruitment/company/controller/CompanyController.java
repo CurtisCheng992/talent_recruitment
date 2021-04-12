@@ -9,6 +9,8 @@ import com.curtis.talent_recruitment.entity.response.QueryResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 /**
  * @Author: Curtis
  * @Description:
@@ -61,5 +63,23 @@ public class CompanyController implements CompanyControllerApi {
     @GetMapping("getDetail/hr/{sHRID}")
     public QueryResponse getDetailByHRID(@PathVariable String sHRID) {
         return companyService.getDetailByHRID(sHRID);
+    }
+
+    @Override
+    @PostMapping("getByPage/currentPage/pageSize/{lCurrentPage}/{lPageSize}")
+    public QueryResponse getByPage(@PathVariable Long lCurrentPage, @PathVariable Long lPageSize, @RequestBody Map<String, Object> mpParam) {
+        return companyService.getByPage(lCurrentPage, lPageSize, mpParam);
+    }
+
+    @Override
+    @PutMapping("updateStatus/{id}")
+    public CommonResponse updateStatus(@PathVariable String id) {
+        return companyService.updateStatus(id);
+    }
+
+    @Override
+    @PutMapping("update/picture/id/{id}")
+    public CommonResponse updatePicture(@PathVariable String id, @RequestBody String sPicture) {
+        return companyService.updatePicture(id, sPicture);
     }
 }

@@ -18,7 +18,7 @@ public interface UserDao {
      * 查询所有用户
      * @return
      */
-    List<User> getList();
+    List<User> getList(Map<String, Object> mpParam);
 
     /**
      * 根据id查询单个用户
@@ -54,4 +54,11 @@ public interface UserDao {
      */
     int getCount(Map<String, Object> mpParam);
 
+    /**
+     * 根据用户id更新用户状态
+     *
+     * @param mpParam
+     * @return
+     */
+    int updateStatusById(Map<String, Object> mpParam);
 }

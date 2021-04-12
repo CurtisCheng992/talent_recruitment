@@ -9,6 +9,7 @@
             id, sUserID, sPositionID, dCreateTIme, dUpdateTime
         from
             t_collection
+        order by dUpdateTime desc
     </select>
 
     <!-- 根据id查询一个收藏信息 -->
@@ -86,7 +87,16 @@
         from
             t_collection
         where
-            sUserID = #{sUserID}
+            1=1
+        <if test="sUserID != null and sUserID != ''">
+            and sUserID = #{sUserID}
+        </if>
+        <if test="sPositionName != null and sPositionName != ''">
+            and sPositionID in ( select id from t_position where sPositionName = #{sPositionName} )
+        </if>
+        <if test="sUsername != null and sUsername != ''">
+            and sUserID in ( select id from t_user where sUsername = #{sUsername} )
+        </if>
     </select>
 
     <!--根据条件删除一条收藏-->

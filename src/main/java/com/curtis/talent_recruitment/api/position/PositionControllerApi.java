@@ -6,8 +6,11 @@ import com.curtis.talent_recruitment.entity.response.CommonResponse;
 import com.curtis.talent_recruitment.entity.response.QueryResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.PathVariable;
+
+import java.util.Map;
 
 /**
  * @Author: Curtis
@@ -60,9 +63,35 @@ public interface PositionControllerApi {
             paramType = "path", dataType = "String")
     QueryResponse getCount(String sHRID);
 
-    @ApiOperation("根据分类号查询职位信息")
-    @ApiImplicitParam(name = "sCategoryID", value = "分类id", required = true,
-            paramType = "path", dataType = "String")
-    QueryResponse getListByCategoryID(String sCategoryID);
+    @ApiOperation("根据分类名称查询职位信息")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "lCurrentpage", value = "当前分页", required = true,
+                    paramType = "path", dataType = "Long"),
+            @ApiImplicitParam(name = "lPageSize", value = "分页大小", required = true,
+                    paramType = "path", dataType = "Long"),
+            @ApiImplicitParam(name = "mpParam", value = "参数", required = false,
+                    paramType = "body", dataType = "Map")
+    })
+    QueryResponse getListByCategoryName(Long lCurrentpage, Long lPageSize, Map<String, Object> mpParam);
+
+    @ApiOperation("根据条件分页查询职位信息")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "lCurrentpage", value = "当前分页", required = true,
+                    paramType = "path", dataType = "Long"),
+            @ApiImplicitParam(name = "lPageSize", value = "分页大小", required = true,
+                    paramType = "path", dataType = "Long"),
+            @ApiImplicitParam(name = "mpParam", value = "参数", required = false,
+                    paramType = "body", dataType = "Map")
+    })
+    QueryResponse getByPage(Long lCurrentpage, Long lPageSize, Map<String, Object> mpParam);
+
+    @ApiOperation("更新职位的热门值")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "sPositionID", value = "职位主键UUID", required = true,
+                    paramType = "path", dataType = "String"),
+            @ApiImplicitParam(name = "iHot", value = "热门值", required = true,
+                    paramType = "path", dataType = "Integer")
+    })
+    CommonResponse updatePositionHot(String sPositionID, Integer iHot);
 
 }

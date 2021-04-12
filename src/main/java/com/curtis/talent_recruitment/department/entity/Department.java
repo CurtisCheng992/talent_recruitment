@@ -25,5 +25,7 @@ public class Department {
     private String sDescription; //部门描述
     @JsonProperty("sCompanyID")
     private String sCompanyID; //所属公司
+    @JsonProperty("sCompanyName")
+    private String sCompanyName; //公司名称
 
 }

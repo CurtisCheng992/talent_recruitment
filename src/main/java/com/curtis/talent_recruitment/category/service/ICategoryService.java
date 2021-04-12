@@ -5,6 +5,8 @@ import com.curtis.talent_recruitment.entity.request.school.UpdateCategory;
 import com.curtis.talent_recruitment.entity.response.CommonResponse;
 import com.curtis.talent_recruitment.entity.response.QueryResponse;
 
+import java.util.Map;
+
 /**
  * @Author: Curtis
  * @Description:
@@ -47,4 +49,21 @@ public interface ICategoryService {
      */
     CommonResponse update(String id, UpdateCategory updateCategory);
 
+    /**
+     * 根据分类名称查询分类信息
+     *
+     * @param sCategoryName
+     * @return
+     */
+    QueryResponse getByName(String sCategoryName);
+
+    /**
+     * 根据条件分页查询
+     *
+     * @param lCurrentPage
+     * @param lPageSize
+     * @param mpParam
+     * @return
+     */
+    QueryResponse getByPage(Long lCurrentPage, Long lPageSize, Map<String, Object> mpParam);
 }

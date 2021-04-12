@@ -9,6 +9,8 @@ import com.curtis.talent_recruitment.position.service.IPositionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 /**
  * @Author: Curtis
  * @Description:
@@ -76,8 +78,21 @@ public class PositionController implements PositionControllerApi {
     }
 
     @Override
-    @GetMapping("")
-    public QueryResponse getListByCategoryID(String sCategoryID) {
-        return null;
+    @PostMapping("getPageByCategory/currentPage/pageSize/{lCurrentpage}/{lPageSize}")
+    public QueryResponse getListByCategoryName(@PathVariable Long lCurrentpage, @PathVariable Long lPageSize, @RequestBody Map<String, Object> mpParam) {
+        return positionService.getListByCategoryName(lCurrentpage, lPageSize, mpParam);
     }
+
+    @Override
+    @PostMapping("getByPage/currentPage/pageSize/{lCurrentpage}/{lPageSize}")
+    public QueryResponse getByPage(@PathVariable Long lCurrentpage, @PathVariable Long lPageSize, @RequestBody Map<String, Object> mpParam) {
+        return positionService.getByPage(lCurrentpage, lPageSize, mpParam);
+    }
+
+    @Override
+    @PutMapping("updatePositionHot/{sPositionID}/{iHot}")
+    public CommonResponse updatePositionHot(@PathVariable String sPositionID, @PathVariable Integer iHot) {
+        return positionService.updatePositionHot(sPositionID, iHot);
+    }
+
 }

@@ -96,4 +96,12 @@ public interface PositionDao {
      * @return
      */
     List<Position> getSearch(Map<String, Object> mpParam);
+
+    /**
+     * 根据职位id更新职位的热门值
+     *
+     * @param mpParam
+     * @return
+     */
+    int updatePositionHot(Map<String, Object> mpParam);
 }

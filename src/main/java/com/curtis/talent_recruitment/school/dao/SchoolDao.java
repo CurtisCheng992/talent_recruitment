@@ -18,7 +18,7 @@ public interface SchoolDao {
      * 查询所有学校信息
      * @return
      */
-    List<School> getList();
+    List<School> getList(Map<String, Object> mpParam);
 
     /**
      * 根据id查询一所学校信息

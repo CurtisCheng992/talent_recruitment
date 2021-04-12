@@ -45,7 +45,7 @@ public class User {
     @JsonProperty("sMajor")
     private String sMajor; //专业
     @JsonProperty("sEducation")
-    private String sEducation; //学历
+    private String sEducation; //学历 {小学、初中、中专/高中、专科、本科、研究生}
     @JsonProperty("sSchoolID")
     private String sSchoolID; //学校id
     @JsonProperty("sSchoolName")

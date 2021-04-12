@@ -17,6 +17,36 @@
         <if test="sHRID != null and sHRID != ''">
             and sHRID = #{sHRID}
         </if>
+        <if test="sPositionName != null and sPositionName != ''">
+            and sPositionID in (select id from t_position where sPositionName = #{sPositionName})
+        </if>
+        <if test="sCompanyName != null and sCompanyName != ''">
+            and sPositionID in (
+            select
+            a.id
+            from t_position a
+            left join t_company b
+            on a.sCompanyID = b.id
+            where b.sCompanyName = #{sCompanyName}
+            )
+        </if>
+        <if test="sWorkCity != null and sWorkCity != ''">
+            and sPositionID in (
+            select
+            a.id
+            from t_position a
+            left join t_company b
+            on a.sCompanyID = b.id
+            where a.sWorkCity = #{sWorkCity}
+            )
+        </if>
+        <if test="sUserRealName != null and sUserRealName != ''">
+            and sUserID in (select id from t_user where sRealName = #{sUserRealName})
+        </if>
+        <if test="iUserGender != null and iUserGender != '' and iUserGender != 'all'">
+            and sUserID in (select id from t_user where iGender = #{iUserGender})
+        </if>
+        order by dUpdateTime desc
     </select>
 
     <!-- 根据id查询一个申请信息 -->

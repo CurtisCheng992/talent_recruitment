@@ -9,6 +9,8 @@ import com.curtis.talent_recruitment.resume.service.IResumeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 /**
  * @Author: Curtis
  * @Description:
@@ -34,6 +36,12 @@ public class ResumeController implements ResumeControllerApi {
     }
 
     @Override
+    @GetMapping("getCount/user/{sUserID}")
+    public QueryResponse getCount(@PathVariable String sUserID) {
+        return resumeService.getCount(sUserID);
+    }
+
+    @Override
     @PostMapping("add")
     public CommonResponse add(@RequestBody AddResume addResume) {
         return resumeService.add(addResume);
@@ -55,5 +63,17 @@ public class ResumeController implements ResumeControllerApi {
     @GetMapping("get/user/{sUserID}")
     public QueryResponse getByUserID(@PathVariable String sUserID) {
         return resumeService.getByUserID(sUserID);
+    }
+
+    @Override
+    @PutMapping("update/picture/id/{id}")
+    public CommonResponse updatePicture(@PathVariable String id, @RequestBody String sPicture) {
+        return resumeService.updatePicture(id, sPicture);
+    }
+
+    @Override
+    @PostMapping("getByPage/currentPage/pageSize/{lCurrentPage}/{lPageSize}")
+    public QueryResponse getByPage(@PathVariable Long lCurrentPage, @PathVariable Long lPageSize, @RequestBody Map<String, Object> mpParam) {
+        return resumeService.getByPage(lCurrentPage, lPageSize, mpParam);
     }
 }

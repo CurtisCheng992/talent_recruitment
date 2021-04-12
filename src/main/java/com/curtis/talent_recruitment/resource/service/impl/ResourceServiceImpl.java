@@ -12,7 +12,10 @@ import com.curtis.talent_recruitment.user.dao.UserDao;
 import com.curtis.talent_recruitment.user.entity.User;
 import com.curtis.talent_recruitment.utils.exception.ExceptionThrowUtils;
 import com.curtis.talent_recruitment.utils.resource.ResourceUtils;
+import com.github.pagehelper.PageInfo;
 import com.hs.commons.utils.ConvertUtils;
+import com.hs.commons.utils.ImgUtils;
+import com.hs.commons.utils.PageUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -126,6 +129,7 @@ public class ResourceServiceImpl implements ResourceService {
                 .id(com.hs.commons.utils.StringUtils.getUUIDString())
                 .sUserID(sUserID)
                 .iType(1)
+                .sSize(ConvertUtils.bytesToKB(ImgUtils.getSize(sFilePath)))
                 .sExt(sExt)
                 .sContentType(sContentType)
                 .sName(sOriginalFileName)
@@ -167,6 +171,26 @@ public class ResourceServiceImpl implements ResourceService {
         Map<String, Object> mpParam = new HashMap<>();
         mpParam.put("sLocation",sLocation);
         resourceDao.deleteByLocation(mpParam);
+    }
+
+    @Override
+    public QueryResponse getByPage(Long lCurrentPage, Long lPageSize, Map<String, Object> mpParam) {
+        mpParam.put("pageNumber", lCurrentPage);
+        mpParam.put("pageSize", lPageSize);
+        //分页
+        PageUtils.initPaging(mpParam);
+        //查询列表
+        List<Resource> arrResource = resourceDao.getList(mpParam);
+        Map<String, Object> mpGet = new HashMap<>();
+        for (Resource resource : arrResource) {
+            mpGet.put("id",resource.getSUserID());
+            User user = userDao.getDetail(mpGet);
+            resource.setSUsername(user.getSUsername());
+        }
+        //分页
+        PageInfo<Resource> page = new PageInfo<>(arrResource);
+        List<PageInfo<Resource>> arrPage = Collections.singletonList(page);
+        return new QueryResponse(CommonCode.SUCCESS, new QueryResult(arrPage, arrPage.size()));
     }
 
     private void downloadCount() {

@@ -3,6 +3,7 @@ package com.curtis.talent_recruitment.resource.dao;
 import com.curtis.talent_recruitment.resource.entity.Resource;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -44,4 +45,11 @@ public interface ResourceDao {
      * @return
      */
     int deleteByLocation(Map<String, Object> mpParam);
+
+    /**
+     * 查询所有资源文件
+     *
+     * @return
+     */
+    List<Resource> getList(Map<String, Object> mpParam);
 }

@@ -205,7 +205,7 @@
         <dependency>
             <groupId>com.hs.tools</groupId>
             <artifactId>tools-commons-utils</artifactId>
-            <version>[1.0.0,)</version>
+            <version>1.0.2</version>
         </dependency>
         <!-- hs tools db -->
         <dependency>

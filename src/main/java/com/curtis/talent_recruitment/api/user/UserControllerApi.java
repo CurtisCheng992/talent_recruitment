@@ -1,16 +1,17 @@
 package com.curtis.talent_recruitment.api.user;
 
 import com.curtis.talent_recruitment.entity.request.auth.LoginUser;
-import com.curtis.talent_recruitment.entity.request.user.AddHR;
-import com.curtis.talent_recruitment.entity.request.user.AddUser;
-import com.curtis.talent_recruitment.entity.request.user.RegisterUser;
-import com.curtis.talent_recruitment.entity.request.user.UpdateUser;
+import com.curtis.talent_recruitment.entity.request.user.*;
 import com.curtis.talent_recruitment.entity.response.CommonResponse;
 import com.curtis.talent_recruitment.entity.response.QueryResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 /**
  * @Author: Curtis
@@ -21,7 +22,9 @@ import io.swagger.annotations.ApiOperation;
 public interface UserControllerApi {
 
     @ApiOperation("查询所有用户信息")
-    QueryResponse getList();
+    @ApiImplicitParam(name = "iRoleType", value = "角色类型", required = false,
+            paramType = "query", dataType = "int")
+    QueryResponse getList(Integer iRoleType);
 
     @ApiOperation("查询个人信息")
     @ApiImplicitParam(name = "id", value = "用户主键id", required = true,
@@ -55,5 +58,41 @@ public interface UserControllerApi {
 
     @ApiOperation("用户注册")
     CommonResponse register(RegisterUser registerUser);
+
+    @ApiOperation("更换头像")
+    @ApiImplicitParam(name = "id", value = "用户主键id", required = true,
+            paramType = "path", dataType = "String")
+    CommonResponse updateAvatar(String id, AvatarUser avatarUser, HttpServletRequest request, HttpServletResponse response);
+
+    @ApiOperation("修改密码")
+    @ApiImplicitParam(name = "id", value = "用户主键id", required = true,
+            paramType = "path", dataType = "String")
+    CommonResponse updatePassword(String id, PasswordUser passwordUser, HttpServletRequest request);
+
+    @ApiOperation("换绑邮箱")
+    @ApiImplicitParam(name = "id", value = "用户主键id", required = true,
+            paramType = "path", dataType = "String")
+    CommonResponse updateEmail(String id, EmailUser emailUser, HttpServletRequest request);
+
+    @ApiOperation("换绑手机号码")
+    @ApiImplicitParam(name = "id", value = "用户主键id", required = true,
+            paramType = "path", dataType = "String")
+    CommonResponse updatePhone(String id, PhoneUser phoneUser, HttpServletRequest request);
+
+    @ApiOperation("根据用户id获取邮箱地址")
+    @ApiImplicitParam(name = "id", value = "用户主键id", required = true,
+            paramType = "path", dataType = "String")
+    QueryResponse getEmailById(String id);
+
+    @ApiOperation("根据条件分页查询")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "lCurrentPage", value = "当前分页", required = true,
+                    paramType = "path", dataType = "Long"),
+            @ApiImplicitParam(name = "lPageSize", value = "分页大小", required = true,
+                    paramType = "path", dataType = "Long"),
+            @ApiImplicitParam(name = "mpParam", value = "参数", required = false,
+                    paramType = "body", dataType = "Map")
+    })
+    QueryResponse getByPage(Long lCurrentPage, Long lPageSize, Map<String, Object> mpParam);
 
 }

@@ -33,9 +33,10 @@ spring:
     restart:
       enabled: true
   mail:
-    host: ENC(WaLpFXYKnKRNAsG1/p6McGLJrmMYyYN9)
-    username: ENC(FRmnejafWbckb2gjtRaFBjY7S0CIkaK2L5v16Ggurl4=)
-    password: ENC(d92dIj8dWEA9GQdto86LcTs4ZtmUqvTum4J4SccS8vQ=)
+#    host: ENC(WaLpFXYKnKRNAsG1/p6McGLJrmMYyYN9)
+    host: ENC(oRXIQz3ZlJ0tKjBiKuQucBFO824Mfr57)
+    username: ENC(KD6MEuH5KoibUBmw8r3xoUQzi/5ajTfntPW8nihla6E=)
+    password: ENC(ZClyb+OYGGxdJ9XcKxKXWrzpKmfvdRt/5OoGPTsa7a0=)
     port: 465
     properties:
       mail:
