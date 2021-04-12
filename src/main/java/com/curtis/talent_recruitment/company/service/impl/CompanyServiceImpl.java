@@ -205,6 +205,7 @@ public class CompanyServiceImpl implements ICompanyService {
         mpParam = ConvertUtils.objectToMap(updateCompany);
         mpParam.put("id", id);
         mpParam.put("dUpdateTime", new Date());
+        mpParam.put("iStatus",0);
         int iResult = companyDao.update(mpParam);
         if (iResult <= 0) {
             return new CommonResponse(CompanyCode.UPDATE_FAIL);
