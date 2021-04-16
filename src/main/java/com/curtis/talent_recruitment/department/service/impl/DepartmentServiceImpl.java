@@ -40,9 +40,6 @@ public class DepartmentServiceImpl implements IDepartmentService {
     private CompanyDao companyDao;
 
     @Autowired
-    private UserDepartmentDao userDepartmentDao;
-
-    @Autowired
     private PositionDao positionDao;
 
     /**
@@ -135,16 +132,12 @@ public class DepartmentServiceImpl implements IDepartmentService {
         if (!StringUtils.isNoneBlank(id)){
             ExceptionThrowUtils.cast(CommonCode.INVALID_PARAM);
         }
-        //判断该部门下是否存在职位，用户-部门
+        //判断该部门下是否存在职位
         Map<String, Object> mpCheck = new HashMap<>();
         mpCheck.put("sDepartmentID",id);
         int iCount = positionDao.getCount(mpCheck);
         if (iCount >= 1){
             return new CommonResponse(DepartmentCode.DELETE_FAIL_POSITION_EXIST);
-        }
-        iCount = userDepartmentDao.getCount(mpCheck);
-        if (iCount >= 1){
-            return new CommonResponse(DepartmentCode.DELETE_FAIL_USER_DEPARTMENT_EXIST);
         }
         //根据id查询部门是否存在
         mpParam.put("id",id);

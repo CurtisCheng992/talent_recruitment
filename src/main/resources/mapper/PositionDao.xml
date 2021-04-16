@@ -178,11 +178,14 @@
     <!--根据职位id更新职位的热门值-->
     <update id="updatePositionHot">
         update
-            t_position
+            t_position a,t_company b
         set
-            iHot = iHot + #{iHot}
+            a.iHot = a.iHot + #{iHot},
+            b.iHot = a.iHot + #{iHot}
         where
-            id = #{sPositionID}
+            a.id = #{sPositionID}
+        and
+            a.sCompanyID = b.id
     </update>
 
 </mapper>

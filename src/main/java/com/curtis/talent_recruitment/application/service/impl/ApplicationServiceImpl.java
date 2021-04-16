@@ -195,7 +195,7 @@ public class ApplicationServiceImpl implements IApplicationService {
             return new CommonResponse(ApplicationCode.USER_NOT_FOUND);
         }
         mpParam.clear();
-        //根据用户id查询一个简历谢谢你
+        //根据用户id查询一个简历信息
         mpParam.put("sUserID",user.getId());
         Resume resume = resumeDao.getByUserID(mpParam);
         if (ObjectUtils.isEmpty(resume)){

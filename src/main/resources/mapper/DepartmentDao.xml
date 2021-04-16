@@ -83,6 +83,9 @@
         <if test="sCompanyID != null and sCompanyID != ''">
             and sCompanyID = #{sCompanyID}
         </if>
+        <if test="id != null and id != ''">
+            and id = #{id}
+        </if>
     </select>
 
 </mapper>

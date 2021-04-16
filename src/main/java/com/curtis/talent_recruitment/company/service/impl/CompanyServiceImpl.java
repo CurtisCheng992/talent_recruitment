@@ -304,7 +304,7 @@ public class CompanyServiceImpl implements ICompanyService {
             mpParam.put("iStatus", 2);
         } else if (company.getIStatus() == 0) { //待审核，改为已审核
             mpParam.put("iStatus", 1);
-        } else if (company.getIStatus() == 2){ //已注销，改为以神恶化
+        } else if (company.getIStatus() == 2){ //已注销，改为已审核
             mpParam.put("iStatus",1);
         }
         int iResult = companyDao.updateStatus(mpParam);
